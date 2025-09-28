@@ -24,8 +24,8 @@ function sendUserNotification($email, $status) {
         $mail->isSMTP();
         $mail->Host       = 'smtp.gmail.com';
         $mail->SMTPAuth   = true;
-        $mail->Username   = 'truevote404@gmail.com';   // Gmail
-        $mail->Password   = 'qqqqpqzqcqjlrtng';        // Gmail App Password
+        $mail->Username   = 'truevote404@gmail.com';
+        $mail->Password   = 'qqqqpqzqcqjlrtng';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = 587;
 
@@ -67,15 +67,14 @@ $msgType = null;
 
 if (isset($_GET['id'], $_GET['status'])) {
     $userId = (int) $_GET['id'];
-    $status = $_GET['status'];
-    $allowedStatuses = ['pending','varified','approved','rejected'];
+    $status = strtolower($_GET['status']);
+    $allowedStatuses = ['pending','verified','approved','rejected'];
 
     if (in_array($status, $allowedStatuses)) {
         $stmt = $pdo->prepare("UPDATE users SET status=? WHERE user_id=?");
         $success = $stmt->execute([$status,$userId]);
 
         if ($success) {
-            // Fetch email of the user
             $stmt = $pdo->prepare("SELECT email FROM users WHERE user_id=?");
             $stmt->execute([$userId]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -96,8 +95,8 @@ if (isset($_GET['id'], $_GET['status'])) {
     }
 }
 
-// Fetch all users except admins
-$stmt = $pdo->prepare("SELECT * FROM users WHERE LOWER(role)!='admin' ORDER BY created_at DESC");
+// Fetch all non-admin users
+$stmt = $pdo->prepare("SELECT * FROM users WHERE role!='admin' ORDER BY created_at DESC");
 $stmt->execute();
 $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -129,14 +128,16 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
         <?php endif; ?>
 
-        <div class="bg-gray-800 rounded-xl shadow-lg overflow-hidden">
-            <table class="w-full">
+        <div class="bg-gray-800 rounded-xl shadow-lg overflow-auto">
+            <table class="w-full min-w-[900px]">
                 <thead class="bg-gray-700">
                     <tr>
                         <th class="px-6 py-3 text-left">User</th>
                         <th class="px-6 py-3 text-left">Email</th>
                         <th class="px-6 py-3 text-left">Phone</th>
                         <th class="px-6 py-3 text-left">Voter ID</th>
+                        <th class="px-6 py-3 text-left">Address</th>
+                        <th class="px-6 py-3 text-left">Constituency</th>
                         <th class="px-6 py-3 text-left">Role</th>
                         <th class="px-6 py-3 text-left">Status</th>
                         <th class="px-6 py-3 text-left">Actions</th>
@@ -149,18 +150,20 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <td class="px-6 py-4"><?= htmlspecialchars($user['email']) ?></td>
                             <td class="px-6 py-4"><?= htmlspecialchars($user['phone']) ?></td>
                             <td class="px-6 py-4"><?= $user['voter_id'] ?: '<span class="text-gray-400 italic">Not Provided</span>' ?></td>
+                            <td class="px-6 py-4"><?= htmlspecialchars($user['address'] ?: 'Not Provided') ?></td>
+                            <td class="px-6 py-4"><?= htmlspecialchars($user['constituency'] ?: 'Not Provided') ?></td>
                             <td class="px-6 py-4"><?= htmlspecialchars($user['role']) ?></td>
                             <td class="px-6 py-4">
                                 <span class="px-3 py-1 rounded-full text-sm 
                                     <?php if($user['status']==='approved'){echo 'bg-green-600';}
                                           elseif($user['status']==='rejected'){echo 'bg-red-600';}
                                           elseif($user['status']==='pending'){echo 'bg-yellow-600';}
-                                          elseif($user['status']==='varified'){echo 'bg-blue-600';} ?>">
+                                          elseif($user['status']==='verified'){echo 'bg-blue-600';} ?>">
                                     <?= ucfirst($user['status']) ?>
                                 </span>
                             </td>
                             <td class="px-6 py-4 space-x-2">
-                                <?php if($user['status']==='pending'||$user['status']==='varified'): ?>
+                                <?php if($user['status']==='pending'||$user['status']==='verified'): ?>
                                     <a href="?id=<?= $user['user_id'] ?>&status=approved" class="btn btn-approve">Approve</a>
                                     <a href="?id=<?= $user['user_id'] ?>&status=rejected" class="btn btn-reject">Reject</a>
                                 <?php elseif($user['status']==='approved'): ?>

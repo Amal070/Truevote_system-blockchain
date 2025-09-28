@@ -11,6 +11,17 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id']; // logged in voter id
 $today = date("Y-m-d");
 
+// Fetch voter's data
+$voter_stmt = $pdo->prepare("SELECT full_name, father_name, gender, dob, address, state, district, constituency, email, phone FROM users WHERE user_id = ?");
+$voter_stmt->execute([$user_id]);
+$voter = $voter_stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$voter || !$voter['constituency']) {
+    die("Voter data not found.");
+}
+
+$voter_constituency = $voter['constituency'];
+
 $message = "";
 
 // Handle registration
@@ -33,13 +44,14 @@ if (isset($_POST['register_election'])) {
     }
 }
 
-// Fetch all elections
-$stmt = $pdo->query("SELECT * FROM elections ORDER BY announcement_date DESC");
+// Fetch voter's elections by constituency
+$stmt = $pdo->prepare("SELECT * FROM elections WHERE constituency = ? ORDER BY announcement_date DESC");
+$stmt->execute([$voter_constituency]);
 $elections = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 function getElectionStatus($election, $today) {
-    if ($today < $election['announcement_date']) return "upcoming"; // Before announcement
-    if ($today >= $election['announcement_date'] && $today <= $election['withdrawal_date']) return "registration"; // Registration period
+    if ($today < $election['registration_start_date']) return "upcoming"; // Before registration starts
+    if ($today >= $election['registration_start_date'] && $today <= $election['registration_end_date']) return "registration"; // Registration period
     if ($today >= $election['polling_start_date'] && $today <= $election['polling_end_date']) return "voting"; // Voting period
     if ($today > $election['polling_end_date']) return "past"; // Counting/Results
     return "unknown";
@@ -85,7 +97,7 @@ function getElectionStatus($election, $today) {
                 <div class="bg-gray-800 p-6 rounded-xl shadow-lg">
                     <h3 class="font-bold text-xl mb-1 text-gray-200"><?= htmlspecialchars($election['title']) ?></h3>
                     <p class="text-sm text-gray-400 mb-2"><?= htmlspecialchars($election['description']) ?></p>
-                    <p class="text-gray-300"><strong>Announcement Date:</strong> <?= $election['announcement_date'] ?></p>
+                    <p class="text-gray-300"><strong>Registration Starts:</strong> <?= $election['registration_start_date'] ?></p>
                     <span class="inline-block mt-4 text-orange-500 font-semibold text-sm">Coming Soon</span>
                 </div>
             <?php endif; ?>
@@ -100,19 +112,18 @@ function getElectionStatus($election, $today) {
                 <div class="bg-gray-800 p-6 rounded-xl shadow-lg">
                     <h3 class="font-bold text-xl mb-1 text-gray-200"><?= htmlspecialchars($election['title']) ?></h3>
                     <p class="text-sm text-gray-400 mb-2"><?= htmlspecialchars($election['description']) ?></p>
-                    <p class="text-gray-300"><strong>Registration:</strong> <?= $election['announcement_date'] ?> → <?= $election['withdrawal_date'] ?></p>
+                    <p class="text-gray-300"><strong>Registration:</strong> <?= $election['registration_start_date'] ?> → <?= $election['registration_end_date'] ?></p>
 
                     <?php
                         $check = $pdo->prepare("SELECT * FROM election_registrations WHERE election_id=? AND voter_id=?");
                         $check->execute([$election['id'], $user_id]);
                     ?>
-                    <?php if ($check->rowCount() == 0): ?>
-                        <form method="post" class="mt-4">
-                            <input type="hidden" name="election_id" value="<?= $election['id'] ?>">
-                            <button type="submit" name="register_election" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg text-sm font-semibold transition-colors duration-200">Register</button>
-                        </form>
-                    <?php else: ?>
+                    <?php if ($check->rowCount() > 0): ?>
                         <span class="inline-block mt-4 text-green-500 font-semibold text-sm">✅ Registered</span>
+                    <?php elseif ($today > $election['registration_end_date']): ?>
+                        <span class="inline-block mt-4 text-red-500 font-semibold text-sm">Registration Ended</span>
+                    <?php else: ?>
+                        <button type="button" onclick="openModal(<?= $election['id'] ?>, '<?= addslashes(htmlspecialchars($election['title'])) ?>')" class="mt-4 bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg text-sm font-semibold transition-colors duration-200">Register</button>
                     <?php endif; ?>
                 </div>
             <?php endif; ?>
@@ -161,5 +172,44 @@ function getElectionStatus($election, $today) {
 
 
 <?php include "includes/footer.php"; ?>
+
+<!-- Modal -->
+<div id="modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+    <div class="bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full mx-4">
+        <h3 class="text-xl font-bold mb-4 text-gray-200">Confirm Registration</h3>
+        <p class="mb-4 text-gray-300">You want to register for this election: <span id="modal-title" class="font-semibold"></span></p>
+        <h4 class="text-lg font-semibold mb-2 text-gray-200">Your Details:</h4>
+        <ul class="mb-4 text-sm text-gray-300">
+            <li><strong>Full Name:</strong> <?= htmlspecialchars($voter['full_name']) ?></li>
+            <li><strong>Father's Name:</strong> <?= htmlspecialchars($voter['father_name'] ?? 'N/A') ?></li>
+            <li><strong>Gender:</strong> <?= htmlspecialchars($voter['gender'] ?? 'N/A') ?></li>
+            <li><strong>Date of Birth:</strong> <?= htmlspecialchars($voter['dob'] ?? 'N/A') ?></li>
+            <li><strong>Address:</strong> <?= htmlspecialchars($voter['address'] ?? 'N/A') ?></li>
+            <li><strong>State:</strong> <?= htmlspecialchars($voter['state'] ?? 'N/A') ?></li>
+            <li><strong>District:</strong> <?= htmlspecialchars($voter['district'] ?? 'N/A') ?></li>
+            <li><strong>Constituency:</strong> <?= htmlspecialchars($voter['constituency']) ?></li>
+            <li><strong>Email:</strong> <?= htmlspecialchars($voter['email']) ?></li>
+            <li><strong>Phone:</strong> <?= htmlspecialchars($voter['phone'] ?? 'N/A') ?></li>
+        </ul>
+        <form method="post" class="flex space-x-4">
+            <input type="hidden" name="election_id" id="modal-election-id">
+            <button type="submit" name="register_election" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors duration-200">Register</button>
+            <button type="button" onclick="closeModal()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors duration-200">Cancel</button>
+        </form>
+    </div>
+</div>
+
+<script>
+function openModal(electionId, title) {
+    document.getElementById('modal-election-id').value = electionId;
+    document.getElementById('modal-title').textContent = title;
+    document.getElementById('modal').classList.remove('hidden');
+}
+
+function closeModal() {
+    document.getElementById('modal').classList.add('hidden');
+}
+</script>
+
 </body>
 </html>

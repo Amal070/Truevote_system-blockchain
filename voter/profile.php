@@ -26,7 +26,6 @@ if (!$user) {
 
 // ---- fix profile image path ----
 if (!empty($user['profile_image'])) {
-    // prepend ../ so it points to /uploads/profile/...
     $profile_image = "../" . ltrim($user['profile_image'], "/");
 } else {
     $profile_image = "../uploads/profile/default.png";
@@ -34,8 +33,14 @@ if (!empty($user['profile_image'])) {
 
 // Handle profile update
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $email = trim($_POST['email']);
-    $phone = trim($_POST['phone']);
+    $email        = trim($_POST['email']);
+    $phone        = trim($_POST['phone']);
+    $father_name  = trim($_POST['father_name'] ?? '');
+    $gender       = $_POST['gender'] ?? '';
+    $dob          = $_POST['dob'] ?? '';
+    $address      = trim($_POST['address'] ?? '');
+    $constituency = trim($_POST['constituency'] ?? '');
+
     // store in DB as relative to project root
     $new_image = ltrim($user['profile_image'], "/");
 
@@ -47,7 +52,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $targetFile = $targetDir . $fileName;
 
         if (move_uploaded_file($_FILES['profile_image']['tmp_name'], $targetFile)) {
-            // what we store in DB
             $new_image = "uploads/profile/" . $fileName;
             $profile_image = "../" . $new_image; // for immediate display
         } else {
@@ -55,14 +59,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
     }
 
+    // Validation
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = "Invalid email.";
     } elseif (!preg_match('/^\d{10}$/', $phone)) {
         $error = "Phone number must be 10 digits.";
     } else {
         if (!isset($error)) {
-            $update = $pdo->prepare("UPDATE users SET email=?, phone=?, profile_image=? WHERE user_id=?");
-            if ($update->execute([$email, $phone, $new_image, $user_id])) {
+            $update = $pdo->prepare("UPDATE users 
+                SET email=?, phone=?, father_name=?, gender=?, dob=?, address=?, constituency=?, profile_image=? 
+                WHERE user_id=?");
+            if ($update->execute([$email, $phone, $father_name, $gender, $dob, $address, $constituency, $new_image, $user_id])) {
                 $_SESSION['success'] = "Profile updated successfully.";
                 header("Location: profile.php");
                 exit;
@@ -104,12 +111,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <div class="bg-gray-800 rounded-xl p-6">
             <h2 class="text-xl font-bold mb-6"><i class="fas fa-user-circle mr-2"></i>Personal Information</h2>
             <form method="POST" enctype="multipart/form-data" class="space-y-4">
-                <!-- Clickable profile image -->
-                <div class="flex justify-center mb-4">
-                    <label for="profile_image_input" class="cursor-pointer">
-                        <img src="<?= htmlspecialchars($profile_image); ?>" 
-                             alt="Profile Image" 
-                             class="w-32 h-32 rounded-full border-4 border-blue-500 hover:opacity-80 transition">
+                <!-- Profile image with pencil icon -->
+                <div class="flex justify-center mb-4 relative w-32 mx-auto">
+                    <img src="<?= htmlspecialchars($profile_image); ?>" 
+                         alt="Profile Image" 
+                         class="w-32 h-32 rounded-full border-4 border-blue-500 object-cover">
+                    
+                    <!-- Pencil Icon -->
+                    <label for="profile_image_input" class="absolute bottom-2 right-2 bg-blue-600 p-2 rounded-full cursor-pointer hover:bg-blue-700 transition">
+                        <i class="fas fa-pencil-alt text-white"></i>
                     </label>
                     <input type="file" name="profile_image" id="profile_image_input" class="hidden" onchange="this.form.submit()">
                 </div>
@@ -122,6 +132,36 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 <div>
                     <label class="block mb-1">Voter ID</label>
                     <input type="text" value="<?= htmlspecialchars($user['voter_id']); ?>" class="w-full px-4 py-2 rounded bg-gray-700" readonly>
+                </div>
+
+                <div>
+                    <label class="block mb-1">Father's Name</label>
+                    <input type="text" name="father_name" value="<?= htmlspecialchars($user['father_name']); ?>" class="w-full px-4 py-2 rounded bg-gray-700">
+                </div>
+
+                <div>
+                    <label class="block mb-1">Gender</label>
+                    <select name="gender" class="w-full px-4 py-2 rounded bg-gray-700">
+                        <option value="">Select Gender</option>
+                        <option value="Male" <?= $user['gender']=='Male'?'selected':'' ?>>Male</option>
+                        <option value="Female" <?= $user['gender']=='Female'?'selected':'' ?>>Female</option>
+                        <option value="Other" <?= $user['gender']=='Other'?'selected':'' ?>>Other</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block mb-1">Date of Birth</label>
+                    <input type="date" name="dob" value="<?= htmlspecialchars($user['dob']); ?>" class="w-full px-4 py-2 rounded bg-gray-700">
+                </div>
+
+                <div>
+                    <label class="block mb-1">Address</label>
+                    <textarea name="address" class="w-full px-4 py-2 rounded bg-gray-700" rows="2"><?= htmlspecialchars($user['address']); ?></textarea>
+                </div>
+
+                <div>
+                    <label class="block mb-1">Constituency</label>
+                    <input type="text" name="constituency" value="<?= htmlspecialchars($user['constituency']); ?>" class="w-full px-4 py-2 rounded bg-gray-700">
                 </div>
 
                 <div>

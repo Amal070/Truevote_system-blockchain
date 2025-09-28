@@ -1,0 +1,167 @@
+{
+  "Kerala": {
+    "Thiruvananthapuram": [
+      "Varkala",
+      "Attingal",
+      "Chirayinkeezhu (SC)",
+      "Nedumangad",
+      "Vamanapuram",
+      "Kazhakuttom",
+      "Vattiyoorkavu",
+      "Thiruvananthapuram",
+      "Nemom",
+      "Parassala",
+      "Kattakkada",
+      "Aryanad",
+      "Kovalam",
+      "Neyyattinkara"
+    ],
+    "Kollam": [
+      "Chavara",
+      "Kunnathur",
+      "Kundara",
+      "Kollam",
+      "Eravipuram",
+      "Chathannoor",
+      "Paravur",
+      "Punalur",
+      "Chadayamangalam",
+      "Kottarakkara",
+      "Pathanapuram"
+    ],
+    "Pathanamthitta": [
+      "Aranmula",
+      "Konni",
+      "Adoor (SC)",
+      "Pathanamthitta",
+      "Ranni",
+      "Thiruvalla"
+    ],
+    "Alappuzha": [
+      "Cherthala",
+      "Alappuzha",
+      "Ambalappuzha",
+      "Haripad",
+      "Kayamkulam",
+      "Mavelikkara (SC)",
+      "Chengannur"
+    ],
+    "Kottayam": [
+      "Pala",
+      "Kaduthuruthy",
+      "Vaikom (SC)",
+      "Ettumanoor",
+      "Kottayam",
+      "Puthuppally",
+      "Changanassery",
+      "Kanjirappally",
+      "Poonjar"
+    ],
+    "Idukki": [
+      "Devikulam (SC)",
+      "Udumbanchola",
+      "Thodupuzha",
+      "Idukki",
+      "Peerumade"
+    ],
+    "Ernakulam": [
+      "Perumbavoor",
+      "Angamaly",
+      "Aluva",
+      "Kalamassery",
+      "Paravur",
+      "Vypin",
+      "Kochi",
+      "Thrippunithura",
+      "Ernakulam",
+      "Thrikkakara",
+      "Kunnathunad (SC)",
+      "Piravom",
+      "Muvattupuzha",
+      "Kothamangalam"
+    ],
+    "Thrissur": [
+      "Kodungallur",
+      "Chalakudy",
+      "Puthukkad",
+      "Irinjalakuda",
+      "Kaipamangalam",
+      "Nattika (SC)",
+      "Thrissur",
+      "Ollur (SC)",
+      "Guruvayur",
+      "Manalur",
+      "Wadakkanchery",
+      "Chelakkara (SC)"
+    ],
+    "Palakkad": [
+      "Tarur (SC)",
+      "Chittur",
+      "Nemmara",
+      "Alathur (SC)",
+      "Kollengode",
+      "Malampuzha",
+      "Palakkad",
+      "Ottapalam",
+      "Shornur",
+      "Pattambi"
+    ],
+    "Malappuram": [
+      "Perinthalmanna",
+      "Mankada",
+      "Malappuram",
+      "Vengara",
+      "Vallikunnu",
+      "Tirurangadi",
+      "Tanur",
+      "Tirur",
+      "Kottakkal",
+      "Thavanur",
+      "Ponnani",
+      "Wandoor (SC)",
+      "Nilambur",
+      "Ernad",
+      "Kondotty"
+    ],
+    "Kozhikode": [
+      "Kunnamangalam",
+      "Koduvally",
+      "Thiruvambady",
+      "Kozhikode North",
+      "Kozhikode South",
+      "Beypore",
+      "Elathur",
+      "Balussery (SC)",
+      "Kuttiady",
+      "Perambra",
+      "Quilandy",
+      "Nadapuram",
+      "Vatakara"
+    ],
+    "Wayanad": [
+      "Mananthavady (ST)",
+      "Sulthan Bathery (ST)",
+      "Kalpetta"
+    ],
+    "Kannur": [
+      "Payyanur",
+      "Kalliassery",
+      "Taliparamba",
+      "Irikkur",
+      "Azhikode",
+      "Kannur",
+      "Dharmadom",
+      "Thalassery",
+      "Kuthuparamba",
+      "Mattannur",
+      "Peravoor"
+    ],
+    "Kasaragod": [
+      "Manjeshwaram",
+      "Kasargod",
+      "Uduma",
+      "Kanhangad",
+      "Trikaripur"
+    ]
+  }
+}

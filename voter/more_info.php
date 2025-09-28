@@ -1,4 +1,4 @@
-<?php 
+<?php  
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -14,15 +14,24 @@ $email = $_SESSION['verified_email'];
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $voter_id  = trim($_POST['voter_id']);
-    $full_name = trim($_POST['full_name']);
-    $phone     = trim($_POST['phone']);
-    $password  = $_POST['password'];
-    $confirm   = $_POST['confirm_password'];
+    $voter_id    = trim($_POST['voter_id']);
+    $full_name   = trim($_POST['full_name']);
+    $father_name = trim($_POST['father_name']);
+    $gender      = $_POST['gender'] ?? null;
+    $dob         = $_POST['dob'] ?? null;
+    $address     = trim($_POST['address']);
+    $state       = trim($_POST['state']);
+    $district    = trim($_POST['district']);
+    $constituency= trim($_POST['constituency']);
+    $phone       = trim($_POST['phone']);
+    $password    = $_POST['password'];
+    $confirm     = $_POST['confirm_password'];
 
     // Validation
-    if (!$voter_id || !$full_name || !$phone || !$password || !$confirm) {
-        $error = "All fields are required.";
+    if (!$voter_id || !$full_name || !$phone || !$password || !$confirm || !$email) {
+        $error = "All required fields must be filled.";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error = "Invalid email address.";
     } elseif (!preg_match('/^[0-9]{10}$/', $phone)) {
         $error = "Phone number must be exactly 10 digits.";
     } elseif (!preg_match('/^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/', $password)) {
@@ -46,13 +55,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
 
                 $stmt = $pdo->prepare("INSERT INTO users 
-                    (voter_id, full_name, email, phone, password, role, status) 
-                    VALUES (?, ?, ?, ?, ?, 'voter', 'pending')");
-                $stmt->execute([$voter_id, $full_name, $email, $phone, $hashedPassword]);
+                    (voter_id, full_name, father_name, gender, dob, address, state, district, constituency, email, phone, password, role, status) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'voter', 'pending')");
+                $stmt->execute([$voter_id, $full_name, $father_name, $gender, $dob, $address, $state, $district, $constituency, $email, $phone, $hashedPassword]);
 
                 unset($_SESSION['verified_email']); // Clear session
 
                 echo "<script>
+                    alert('Registration successful! Please wait for approval.');
                     window.location.href = '../login.php';
                 </script>";
                 exit;
@@ -84,29 +94,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             box-shadow: 0 8px 25px rgba(0,0,0,0.1);
             animation: fadeIn 0.6s ease-in-out;
         }
-        h4 {
-            font-weight: 700;
-            color: #0d6efd;
-        }
-        .form-label {
-            font-weight: 500;
-        }
+        h4 { font-weight: 700; color: #0d6efd; }
+        .form-label { font-weight: 500; }
         .form-control:focus {
             border-color: #0d6efd;
             box-shadow: 0 0 8px rgba(13, 110, 253, 0.3);
         }
-        .btn-primary {
-            border-radius: 30px;
-            font-weight: 600;
-            padding: 10px;
-        }
-        .alert {
-            border-radius: 10px;
-            font-size: 0.9rem;
-        }
-        .text-danger, .text-success {
-            font-size: 0.85rem;
-        }
+        .btn-primary { border-radius: 30px; font-weight: 600; padding: 10px; }
+        .alert { border-radius: 10px; font-size: 0.9rem; }
+        .text-danger, .text-success { font-size: 0.85rem; }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -140,6 +136,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="mb-3">
                 <label class="form-label">Full Name</label>
                 <input type="text" name="full_name" class="form-control" placeholder="Enter your full name" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Father's Name</label>
+                <input type="text" name="father_name" class="form-control" placeholder="Enter your father's name">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Gender</label>
+                <select name="gender" class="form-control">
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Date of Birth</label>
+                <input type="date" name="dob" class="form-control">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Address</label>
+                <textarea name="address" class="form-control" rows="2" placeholder="Enter your full address"></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">State</label>
+                <input type="text" name="state" class="form-control" placeholder="Enter your state" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">District</label>
+                <input type="text" name="district" class="form-control" placeholder="Enter your district" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Constituency</label>
+                <input type="text" name="constituency" class="form-control" placeholder="Enter your constituency" required>
             </div>
 
             <div class="mb-3">

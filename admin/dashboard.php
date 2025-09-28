@@ -1,3 +1,12 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+    header("Location: ../login.php");
+    exit;
+}
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -325,7 +334,6 @@
         <i class="fas fa-chevron-down ml-1 text-xs"></i>
     </a>
 
-    <!-- Dropdown -->
     <div class="absolute left-0 mt-2 w-44 bg-gray-800 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 group-hover:visible invisible transition duration-200 z-50">
         <a href="add_candidates.php" class="block px-4 py-2 text-sm text-gray-200 hover:bg-purple-600 hover:text-white rounded-t-lg">
             <i class="fas fa-user-plus mr-2"></i> Add Candidate
@@ -348,8 +356,8 @@
                     <a href="manage_users.php" class="text-gray-300 hover:text-white font-medium transition-colors focus-ring rounded px-2 py-1">
                         <i class="fas fa-file-alt mr-2"></i>Logs
                     </a>
-                    <a href="#" class="text-gray-300 hover:text-white font-medium transition-colors focus-ring rounded px-2 py-1">
-                        <i class="fas fa-cog mr-2"></i>Settings
+                    <a href="../logout.php" class="text-gray-300 hover:text-white font-medium transition-colors focus-ring rounded px-2 py-1">
+                        <i class="fas fa-cog mr-2"></i>Logout
                     </a>
                 </div>
             </nav>

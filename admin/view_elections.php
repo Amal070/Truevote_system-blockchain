@@ -44,17 +44,17 @@ $elections = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         .btn-primary {
             background:linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-            color:#fff; padding:0.6rem 1.2rem;
+            color:#fff; padding:0.5rem 0.9rem;
             border:none; border-radius:0.5rem;
             cursor:pointer; font-weight:600;
             text-decoration:none;
             display:inline-block;
-            margin-bottom:1rem;
+            margin-bottom:0.3rem;
         }
         .btn-primary:hover { transform:scale(1.05); box-shadow:0 5px 15px rgba(59,130,246,0.5); }
 
-        .btn-warning { background:#f59e0b; border:none; color:#fff; padding:0.4rem 0.8rem; border-radius:0.3rem; font-weight:600; }
-        .btn-danger { background:#ef4444; border:none; color:#fff; padding:0.4rem 0.8rem; border-radius:0.3rem; font-weight:600; }
+        .btn-warning { background:#f59e0b; border:none; color:#fff; padding:0.4rem 0.8rem; border-radius:0.3rem; font-weight:600; text-decoration:none; display:inline-block; }
+        .btn-danger { background:#ef4444; border:none; color:#fff; padding:0.4rem 0.8rem; border-radius:0.3rem; font-weight:600; text-decoration:none; display:inline-block; }
 
         .alert { background:#22c55e; color:#fff; padding:0.75rem; border-radius:0.5rem; margin-bottom:1rem; text-align:center; }
 
@@ -65,7 +65,7 @@ $elections = $stmt->fetchAll(PDO::FETCH_ASSOC);
             border-radius:0.5rem;
         }
         table { width:100%; border-collapse:collapse; min-width:950px; }
-        th, td { padding:0.75rem; border-bottom:1px solid #334155; text-align:center; white-space:nowrap; }
+        th, td { padding:0.75rem; border-bottom:1px solid #334155; text-align:center; white-space:nowrap; vertical-align:top; }
         th { background:#334155; color:#f8fafc; }
         tr:hover { background:#0f172a; }
 
@@ -89,15 +89,15 @@ $elections = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <table>
                 <thead>
                     <tr>
-                        <th>ID</th>
+                        <!-- <th>ID</th> -->
                         <th>Code</th>
                         <th>Title</th>
                         <th>Type</th>
                         <th>Constituency</th>
+                        <th>Description</th>
                         <th>Announcement</th>
-                        <th>Nomination</th>
+                        <th>Registration</th>
                         <th>Polling</th>
-                        <th>Counting</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -105,22 +105,27 @@ $elections = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <?php if (!empty($elections)): ?>
                         <?php foreach ($elections as $election): ?>
                             <tr>
-                                <td><?= $election['id'] ?></td>
+                                <!-- <td><?= $election['id'] ?></td> -->
                                 <td><?= htmlspecialchars($election['election_code']) ?></td>
                                 <td><?= htmlspecialchars($election['title']) ?></td>
                                 <td><?= htmlspecialchars($election['election_type']) ?></td>
                                 <td><?= htmlspecialchars($election['constituency']) ?></td>
+                                <td><?= nl2br(htmlspecialchars($election['description'])) ?></td>
                                 <td><?= htmlspecialchars($election['announcement_date']) ?></td>
                                 <td>
-                                    <?= htmlspecialchars($election['nomination_start_date']) ?> → 
-                                    <?= htmlspecialchars($election['nomination_end_date']) ?>
+                                    <?= htmlspecialchars($election['registration_start_date']) ?> → 
+                                    <?= htmlspecialchars($election['registration_end_date']) ?>
                                 </td>
                                 <td>
                                     <?= htmlspecialchars($election['polling_start_date']) ?> → 
                                     <?= htmlspecialchars($election['polling_end_date']) ?>
                                 </td>
-                                <td><?= htmlspecialchars($election['counting_date']) ?></td>
                                 <td class="actions">
+                                    <a href="add_candidates.php?election_id=<?= $election['id'] ?>" 
+                                       class="btn-primary" 
+                                       style="padding:0.4rem 0.8rem;font-size:0.85rem;">
+                                       <i class="fas fa-user-plus"></i> Candidate
+                                    </a><br>
                                     <a href="edit_election.php?id=<?= $election['id'] ?>" class="btn-warning">Edit</a>
                                     <a href="view_elections.php?delete=<?= $election['id'] ?>"
                                        class="btn-danger"

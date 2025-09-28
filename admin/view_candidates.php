@@ -8,151 +8,93 @@ if ($_SESSION['role'] !== 'admin') {
 require_once "../db.php";
 
 // Fetch all elections
-$elections = $pdo->query("SELECT * FROM elections ORDER BY announcement_date DESC")->fetchAll(PDO::FETCH_ASSOC);
-
-// Fetch all candidates grouped by election_id
-$candidatesByElection = [];
-$stmt = $pdo->query("SELECT * FROM candidates ORDER BY name ASC");
-while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-    $candidatesByElection[$row['election_id']][] = $row;
-}
+$electionsStmt = $pdo->query("SELECT * FROM elections ORDER BY announcement_date DESC");
+$elections = $electionsStmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>All Candidates - TrueVote Admin</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-
-  <style>
-    body { font-family: 'Inter', sans-serif; background:#0f172a; margin:0; color:#f8fafc; }
-    h2 { text-align:center; font-weight:600; margin:2rem 0; color:#e2e8f0; }
-
-    .container { max-width:1200px; margin:auto; padding:1rem; }
-
-    .election-card {
-      background:#1e293b;
-      padding:1.5rem;
-      margin-bottom:2rem;
-      border-radius:12px;
-      box-shadow:0 6px 18px rgba(0,0,0,0.4);
-    }
-    .election-card h3 {
-      margin:0 0 1rem;
-      color:#93c5fd;
-      font-size:1.4rem;
-    }
-    .election-info {
-      color:#cbd5e1;
-      margin-bottom:1rem;
-      font-size:0.95rem;
-    }
-
-    .candidates-grid {
-      display:grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap:1rem;
-    }
-    .candidate-card {
-      background:#0f172a;
-      border:1px solid #334155;
-      border-radius:10px;
-      padding:1rem;
-      text-align:center;
-      transition:0.3s;
-    }
-    .candidate-card:hover {
-      transform:translateY(-3px);
-      box-shadow:0 8px 16px rgba(0,0,0,0.5);
-    }
-    .candidate-photo {
-      width:100px;
-      height:100px;
-      border-radius:50%;
-      object-fit:cover;
-      margin-bottom:0.75rem;
-      border:2px solid #3b82f6;
-    }
-    .candidate-logo {
-      width:50px;
-      height:50px;
-      object-fit:cover;
-      margin-top:0.5rem;
-    }
-    .candidate-name {
-      font-weight:600;
-      font-size:1.1rem;
-      margin:0.25rem 0;
-      color:#f1f5f9;
-    }
-    .candidate-party { color:#38bdf8; font-size:0.9rem; }
-    .candidate-constituency { font-size:0.9rem; color:#eab308; }
-    .candidate-manifesto {
-      margin-top:0.5rem;
-      font-size:0.85rem;
-      color:#94a3b8;
-    }
-
-    .no-candidates {
-      font-style:italic;
-      color:#94a3b8;
-      text-align:center;
-      margin:1rem 0;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>View Candidates by Election</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background:#0f172a; font-family:'Inter',sans-serif; color:#f8fafc; margin:0; padding:0; }
+        .container { max-width:1200px; margin:2rem auto; padding:0 1rem; }
+        h2 { margin-bottom:1rem; color:#93c5fd; text-align:left; }
+        .election-section { margin-bottom:3rem; }
+        .candidates-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:1rem; }
+        .candidate-card {
+            background:#1e293b; padding:1rem; border-radius:0.75rem; box-shadow:0 4px 15px rgba(0,0,0,0.3);
+            display:flex; flex-direction:column; align-items:center; text-align:center;
+        }
+        .candidate-card img { width:100px; height:100px; object-fit:cover; border-radius:50%; margin-bottom:0.5rem; }
+        .candidate-name { font-weight:600; margin-bottom:0.25rem; font-size:1.1rem; }
+        .candidate-party { font-size:0.9rem; margin-bottom:0.25rem; color:#d1d5db; }
+        .view-btn {
+            display:inline-block; margin-top:10px; padding:6px 14px; 
+            background:#6366f1; color:#fff; border-radius:6px; 
+            text-decoration:none; font-size:0.9rem; transition:0.3s;
+        }
+        .view-btn:hover { background:#4f46e5; }
+        .add-candidate {
+            display:flex; align-items:center; justify-content:center;
+            background:#6366f1; color:#fff; font-size:2rem; border-radius:50%;
+            width:60px; height:60px; cursor:pointer; margin:1rem auto; text-decoration:none;
+            transition:0.3s;
+        }
+        .add-candidate:hover { background:#4f46e5; transform:scale(1.1); }
+        .no-candidates { color:#94a3b8; font-style:italic; }
+    </style>
 </head>
 <body>
 <?php include "includes/header.php"; ?>
 
 <div class="container">
-  <h2>All Elections & Candidates</h2>
+    <?php if (!empty($elections)): ?>
+        <?php foreach ($elections as $election): ?>
+            <div class="election-section">
+                <h2><?= htmlspecialchars($election['title']) ?> (<?= htmlspecialchars($election['constituency']) ?>)</h2>
 
-  <?php if (!empty($elections)): ?>
-    <?php foreach ($elections as $election): ?>
-      <div class="election-card">
-        <h3><?= htmlspecialchars($election['title']) ?> 
-          <small style="color:#cbd5e1;">(<?= htmlspecialchars($election['election_type']) ?>)</small>
-        </h3>
-        <div class="election-info">
-          <strong>Code:</strong> <?= htmlspecialchars($election['election_code']) ?> | 
-          <strong>Constituency:</strong> <?= htmlspecialchars($election['constituency']) ?> | 
-          <strong>Announcement:</strong> <?= htmlspecialchars($election['announcement_date']) ?>
-        </div>
+                <?php
+                // Fetch candidates for this election
+                $stmt = $pdo->prepare("SELECT * FROM candidates WHERE election_id=? ORDER BY name ASC");
+                $stmt->execute([$election['id']]);
+                $candidates = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                ?>
+                <?php if (!empty($candidates)): ?>
+                    <div class="candidates-grid">
+                        <?php foreach ($candidates as $c): ?>
+                            <div class="candidate-card">
+                                <?php if($c['photo']): ?>
+                                 <img src="../uploads/candidates/photos/<?= htmlspecialchars($c['photo']) ?>" 
+                                 alt="Photo of <?= htmlspecialchars($c['name']) ?>">
+                                <?php else: ?>
+                                 <img src="https://via.placeholder.com/100?text=No+Photo" alt="No Photo">
+                                <?php endif; ?>
 
-        <?php if (!empty($candidatesByElection[$election['id']])): ?>
-          <div class="candidates-grid">
-            <?php foreach ($candidatesByElection[$election['id']] as $cand): ?>
-              <div class="candidate-card">
-                <?php if ($cand['photo']): ?>
-                  <img src="../<?= htmlspecialchars($cand['photo']) ?>" class="candidate-photo" alt="Photo">
+
+                                <div class="candidate-name"><?= htmlspecialchars($c['name']) ?></div>
+                                <div class="candidate-party">Party: <?= htmlspecialchars($c['party_name'] ?: 'Independent') ?></div>
+                                <div class="candidate-party">Constituency: <?= htmlspecialchars($election['constituency']) ?></div>
+
+                                <!-- View More Button -->
+                                <a href="view_candidate.php?id=<?= $c['id'] ?>" class="view-btn">View More</a>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
                 <?php else: ?>
-                  <img src="https://via.placeholder.com/100" class="candidate-photo" alt="No Photo">
+                    <p class="no-candidates">No candidates yet.</p>
                 <?php endif; ?>
 
-                <div class="candidate-name"><?= htmlspecialchars($cand['name']) ?></div>
-                <div class="candidate-party"><?= htmlspecialchars($cand['party_name']) ?></div>
-                <!-- <div class="candidate-constituency">Constituency: <?= htmlspecialchars($cand['constituency']) ?></div> -->
-
-                <?php if ($cand['logo']): ?>
-                  <div><img src="../<?= htmlspecialchars($cand['logo']) ?>" class="candidate-logo" alt="Logo"></div>
-                <?php endif; ?>
-
-                <?php if ($cand['manifesto']): ?>
-                  <div class="candidate-manifesto"><?= htmlspecialchars($cand['manifesto']) ?></div>
-                <?php endif; ?>
-              </div>
-            <?php endforeach; ?>
-          </div>
-        <?php else: ?>
-          <div class="no-candidates">No candidates added yet for this election.</div>
-        <?php endif; ?>
-      </div>
-    <?php endforeach; ?>
-  <?php else: ?>
-    <p>No elections found.</p>
-  <?php endif; ?>
+                <!-- Add Candidate Button -->
+                <a href="add_candidates.php?election_id=<?= $election['id'] ?>" class="add-candidate">
+                    <i class="fas fa-plus"></i>
+                </a>
+            </div>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <p class="no-candidates">No elections found.</p>
+    <?php endif; ?>
 </div>
 
 <?php include "includes/footer.php"; ?>
