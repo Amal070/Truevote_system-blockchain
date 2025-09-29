@@ -3,7 +3,7 @@
     "Thiruvananthapuram": [
       "Varkala",
       "Attingal",
-      "Chirayinkeezhu (SC)",
+      "Chirayinkeezhu",
       "Nedumangad",
       "Vamanapuram",
       "Kazhakuttom",
@@ -32,7 +32,7 @@
     "Pathanamthitta": [
       "Aranmula",
       "Konni",
-      "Adoor (SC)",
+      "Adoor",
       "Pathanamthitta",
       "Ranni",
       "Thiruvalla"
@@ -43,13 +43,13 @@
       "Ambalappuzha",
       "Haripad",
       "Kayamkulam",
-      "Mavelikkara (SC)",
+      "Mavelikkara",
       "Chengannur"
     ],
     "Kottayam": [
       "Pala",
       "Kaduthuruthy",
-      "Vaikom (SC)",
+      "Vaikom",
       "Ettumanoor",
       "Kottayam",
       "Puthuppally",
@@ -58,7 +58,7 @@
       "Poonjar"
     ],
     "Idukki": [
-      "Devikulam (SC)",
+      "Devikulam",
       "Udumbanchola",
       "Thodupuzha",
       "Idukki",
@@ -75,7 +75,7 @@
       "Thrippunithura",
       "Ernakulam",
       "Thrikkakara",
-      "Kunnathunad (SC)",
+      "Kunnathunad",
       "Piravom",
       "Muvattupuzha",
       "Kothamangalam"
@@ -86,19 +86,19 @@
       "Puthukkad",
       "Irinjalakuda",
       "Kaipamangalam",
-      "Nattika (SC)",
+      "Nattika",
       "Thrissur",
-      "Ollur (SC)",
+      "Ollur",
       "Guruvayur",
       "Manalur",
       "Wadakkanchery",
-      "Chelakkara (SC)"
+      "Chelakkara"
     ],
     "Palakkad": [
-      "Tarur (SC)",
+      "Tarur",
       "Chittur",
       "Nemmara",
-      "Alathur (SC)",
+      "Alathur",
       "Kollengode",
       "Malampuzha",
       "Palakkad",
@@ -118,7 +118,7 @@
       "Kottakkal",
       "Thavanur",
       "Ponnani",
-      "Wandoor (SC)",
+      "Wandoor",
       "Nilambur",
       "Ernad",
       "Kondotty"
@@ -131,7 +131,7 @@
       "Kozhikode South",
       "Beypore",
       "Elathur",
-      "Balussery (SC)",
+      "Balussery",
       "Kuttiady",
       "Perambra",
       "Quilandy",
@@ -139,8 +139,8 @@
       "Vatakara"
     ],
     "Wayanad": [
-      "Mananthavady (ST)",
-      "Sulthan Bathery (ST)",
+      "Mananthavady",
+      "Sulthan Bathery",
       "Kalpetta"
     ],
     "Kannur": [

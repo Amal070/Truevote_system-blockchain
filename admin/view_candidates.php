@@ -66,7 +66,7 @@ $elections = $electionsStmt->fetchAll(PDO::FETCH_ASSOC);
                         <?php foreach ($candidates as $c): ?>
                             <div class="candidate-card">
                                 <?php if($c['photo']): ?>
-                                 <img src="../uploads/candidates/photos/<?= htmlspecialchars($c['photo']) ?>" 
+                                 <img src="../<?= htmlspecialchars($c['photo']) ?>"
                                  alt="Photo of <?= htmlspecialchars($c['name']) ?>">
                                 <?php else: ?>
                                  <img src="https://via.placeholder.com/100?text=No+Photo" alt="No Photo">

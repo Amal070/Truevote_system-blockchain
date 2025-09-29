@@ -16,13 +16,20 @@ $voter_stmt = $pdo->prepare("SELECT full_name, father_name, gender, dob, address
 $voter_stmt->execute([$user_id]);
 $voter = $voter_stmt->fetch(PDO::FETCH_ASSOC);
 
-if (!$voter || !$voter['constituency']) {
-    die("Voter data not found.");
+if (!$voter) {
+    header("Location: profile.php");
+    exit;
+}
+
+if (!$voter['constituency']) {
+    die("Please update your profile with constituency information to view elections.");
 }
 
 $voter_constituency = $voter['constituency'];
 
 $message = "";
+$vote_message = $_SESSION['vote_message'] ?? "";
+unset($_SESSION['vote_message']);
 
 // Handle registration
 if (isset($_POST['register_election'])) {
@@ -89,6 +96,12 @@ function getElectionStatus($election, $today) {
         </div>
     <?php endif; ?>
 
+    <?php if (!empty($vote_message)): ?>
+        <div class="bg-blue-100 text-blue-800 p-3 rounded mb-4">
+            <?= htmlspecialchars($vote_message) ?>
+        </div>
+    <?php endif; ?>
+
     <!-- Upcoming Elections -->
     <h2 class="text-2xl font-semibold mt-6 mb-4 text-gray-400">Upcoming Elections</h2>
     <div class="grid md:grid-cols-2 gap-8">
@@ -145,7 +158,47 @@ function getElectionStatus($election, $today) {
                         $check->execute([$election['id'], $user_id]);
                     ?>
                     <?php if ($check->rowCount() > 0): ?>
-                        <a href="vote_now.php?election_id=<?= $election['id'] ?>" class="inline-block mt-4 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg text-sm font-semibold transition-colors duration-200">Vote Now</a>
+                        <?php
+                        $cand_stmt = $pdo->prepare("SELECT * FROM candidates WHERE election_id = ?");
+                        $cand_stmt->execute([$election['id']]);
+                        $candidates = $cand_stmt->fetchAll(PDO::FETCH_ASSOC);
+                        ?>
+                        <div id="candidates-<?= $election['id'] ?>" class="hidden flex flex-col items-center">
+                            <?php foreach ($candidates as $candidate): ?>
+                                <div class="w-3/4 bg-gray-700 p-4 rounded-lg flex items-center justify-between mb-6">
+                                    <div class="flex items-center">
+                                        <div>
+                                            <p class="text-gray-200 font-semibold"><?= htmlspecialchars($candidate['name']) ?></p>
+                                            <p class="text-gray-400 text-sm">Party: <?= htmlspecialchars($candidate['party_name'] ?? 'Independent') ?></p>
+                                        </div>
+                                        <img src="../<?= htmlspecialchars($candidate['symbol']) ?>" alt="Symbol" class="w-12 h-12 ml-6">
+                                    </div>
+                                    <form method="post" action="cast_vote.php" class="ml-6">
+                                        <input type="hidden" name="election_id" value="<?= $election['id'] ?>">
+                                        <input type="hidden" name="candidate_id" value="<?= $candidate['id'] ?>">
+                                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-sm font-semibold transition-colors duration-200">
+                                            Vote
+                                        </button>
+                                    </form>
+                                </div>
+                            <?php endforeach; ?>
+                            <!-- NOTA Option -->
+                            <div class="w-3/4 bg-gray-700 p-4 rounded-lg flex items-center justify-between mb-6">
+                                <div class="flex items-center">
+                                    <div>
+                                        <p class="text-gray-200 font-semibold">None of the above</p>
+                                    </div>
+                                </div>
+                                <form method="post" action="cast_vote.php" class="ml-6">
+                                    <input type="hidden" name="election_id" value="<?= $election['id'] ?>">
+                                    <input type="hidden" name="nota" value="1">
+                                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg text-sm font-semibold transition-colors duration-200">
+                                        NOTA
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        <button type="button" onclick="openVoteModal(<?= $election['id'] ?>)" class="inline-block mt-4 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg text-sm font-semibold transition-colors duration-200">Vote Now</button>
                     <?php else: ?>
                         <span class="inline-block mt-4 text-red-500 font-semibold text-sm">❌ Not Registered</span>
                     <?php endif; ?>
@@ -199,6 +252,15 @@ function getElectionStatus($election, $today) {
     </div>
 </div>
 
+<!-- Vote Modal -->
+<div id="vote-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+    <div class="bg-gray-800 p-6 rounded-lg shadow-lg max-w-6xl w-full mx-4 max-h-screen overflow-y-auto">
+        <h3 class="text-xl font-bold mb-4 text-gray-200">Vote for Candidates</h3>
+        <div id="vote-modal-content" class="flex flex-col items-center"></div>
+        <button type="button" onclick="closeVoteModal()" class="mt-4 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors duration-200">Close</button>
+    </div>
+</div>
+
 <script>
 function openModal(electionId, title) {
     document.getElementById('modal-election-id').value = electionId;
@@ -208,6 +270,16 @@ function openModal(electionId, title) {
 
 function closeModal() {
     document.getElementById('modal').classList.add('hidden');
+}
+
+function openVoteModal(electionId) {
+    const candidatesHtml = document.getElementById('candidates-' + electionId).innerHTML;
+    document.getElementById('vote-modal-content').innerHTML = candidatesHtml;
+    document.getElementById('vote-modal').classList.remove('hidden');
+}
+
+function closeVoteModal() {
+    document.getElementById('vote-modal').classList.add('hidden');
 }
 </script>
 

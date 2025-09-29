@@ -6,16 +6,15 @@ if ($_SESSION['role'] !== 'admin') {
 }
 require_once "../db.php";
 
-// Load JSON data and decode to arrays
+// Load JSON data
 $national_json = json_decode(file_get_contents(__DIR__ . "/../includes/constituencies/national.json"), true);
 $state_json    = json_decode(file_get_contents(__DIR__ . "/../includes/constituencies/state.json"), true);
 
-// Handle form submit
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $election_code           = $_POST['election_code'];
     $title                   = $_POST['title'];
     $election_type           = $_POST['election_type'];
-    // this will hold the selected option from our JS dropdown
+    $district                = isset($_POST['district']) ? $_POST['district'] : null;
     $constituency            = isset($_POST['constituency']) ? $_POST['constituency'] : null;
     $description             = $_POST['description'];
     $announcement_date       = $_POST['announcement_date'];
@@ -24,12 +23,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $polling_start_date      = $_POST['polling_start_date'];
     $polling_end_date        = $_POST['polling_end_date'];
 
-    if (
-        !empty($election_code) && !empty($title) && !empty($election_type) &&
-        !empty($announcement_date) && !empty($registration_start_date) && 
-        !empty($registration_end_date) && !empty($polling_start_date) && !empty($polling_end_date) &&
-        !empty($constituency)
-    ) {
+    $valid = !empty($election_code) && !empty($title) && !empty($election_type) &&
+             !empty($announcement_date) && !empty($registration_start_date) && 
+             !empty($registration_end_date) && !empty($polling_start_date) && !empty($polling_end_date);
+
+    // For Lok Sabha: constituency required
+    // For State: district + constituency required
+    if ($election_type === "Lok Sabha Elections (National)") {
+        $valid = $valid && !empty($constituency);
+    } elseif ($election_type === "State Legislative Assembly Elections (Vidhan Sabha)") {
+        $valid = $valid && !empty($district) && !empty($constituency);
+    }
+
+    if ($valid) {
         $stmt = $pdo->prepare("
             INSERT INTO elections (
                 election_code, title, election_type, constituency, description,
@@ -37,7 +43,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 polling_start_date, polling_end_date
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
-
         if ($stmt->execute([
             $election_code, $title, $election_type, $constituency, $description,
             $announcement_date, $registration_start_date, $registration_end_date,
@@ -102,10 +107,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <option value="State Legislative Assembly Elections (Vidhan Sabha)">State Legislative Assembly Elections (Vidhan Sabha)</option>
         </select>
 
-        <label class="form-label">Constituency *</label>
-        <div id="constituency-wrapper">
-            <!-- Constituency dropdown(s) will be injected by JS -->
-        </div>
+        <!-- District field (only for state elections) -->
+        <div id="district-container"></div>
+
+        <!-- Constituency field -->
+        <div id="constituency-container"></div>
 
         <label class="form-label">Description</label>
         <textarea name="description"></textarea>
@@ -131,50 +137,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 
 <script>
-// Embed decoded PHP arrays into JS
 const nationalData = <?php echo json_encode($national_json); ?>;
 const stateData    = <?php echo json_encode($state_json); ?>;
 
-document.getElementById("election_type").addEventListener("change", function() {
+const electionTypeSelect = document.getElementById("election_type");
+const districtContainer  = document.getElementById("district-container");
+const constituencyContainer = document.getElementById("constituency-container");
+
+electionTypeSelect.addEventListener("change", function() {
     const type = this.value;
-    const wrapper = document.getElementById("constituency-wrapper");
-    wrapper.innerHTML = "";
+    districtContainer.innerHTML = "";
+    constituencyContainer.innerHTML = "";
 
     if (type === "Lok Sabha Elections (National)") {
-        let select = document.createElement("select");
-        select.name = "constituency"; // ensure name is constituency so PHP sees it
-        select.required = true;
-        select.innerHTML = '<option value="">-- Select Constituency --</option>';
+        // Only constituency dropdown from national.json
+        let consLabel = document.createElement("label");
+        consLabel.className = "form-label";
+        consLabel.textContent = "Constituency *";
+        constituencyContainer.appendChild(consLabel);
+
+        let consSelect = document.createElement("select");
+        consSelect.name = "constituency";
+        consSelect.required = true;
+        consSelect.innerHTML = '<option value="">-- Select Constituency --</option>';
         for (let stateName in nationalData) {
             nationalData[stateName].forEach(c => {
-                select.innerHTML += `<option value="${stateName} - ${c}">${stateName} – ${c}</option>`;
+                consSelect.innerHTML += `<option value="${c}">${c}</option>`;
             });
         }
-        wrapper.appendChild(select);
+        constituencyContainer.appendChild(consSelect);
 
     } else if (type === "State Legislative Assembly Elections (Vidhan Sabha)") {
-        // District dropdown
+        // District dropdown from state.json keys
+        let distLabel = document.createElement("label");
+        distLabel.className = "form-label";
+        distLabel.textContent = "District *";
+        districtContainer.appendChild(distLabel);
+
         let districtSelect = document.createElement("select");
+        districtSelect.name = "district";
+        districtSelect.required = true;
         districtSelect.innerHTML = '<option value="">-- Select District --</option>';
         for (let district in stateData["Kerala"]) {
             districtSelect.innerHTML += `<option value="${district}">${district}</option>`;
         }
-        wrapper.appendChild(districtSelect);
+        districtContainer.appendChild(districtSelect);
 
-        // Constituency dropdown
-        let constSelect = document.createElement("select");
-        constSelect.name = "constituency"; // ensure name is constituency so PHP sees it
-        constSelect.required = true;
-        constSelect.innerHTML = '<option value="">-- Select Constituency --</option>';
-        wrapper.appendChild(constSelect);
+        let consLabel = document.createElement("label");
+        consLabel.className = "form-label";
+        consLabel.textContent = "Constituency *";
+        constituencyContainer.appendChild(consLabel);
 
-        // Change constituencies when district selected
+        let consSelect = document.createElement("select");
+        consSelect.name = "constituency";
+        consSelect.required = true;
+        consSelect.innerHTML = '<option value="">-- Select Constituency --</option>';
+        constituencyContainer.appendChild(consSelect);
+
         districtSelect.addEventListener("change", function() {
             const district = this.value;
-            constSelect.innerHTML = '<option value="">-- Select Constituency --</option>';
+            consSelect.innerHTML = '<option value="">-- Select Constituency --</option>';
             if (district && stateData["Kerala"][district]) {
                 stateData["Kerala"][district].forEach(c => {
-                    constSelect.innerHTML += `<option value="${district} - ${c}">${district} – ${c}</option>`;
+                    consSelect.innerHTML += `<option value="${c}">${c}</option>`;
                 });
             }
         });
@@ -185,4 +210,3 @@ document.getElementById("election_type").addEventListener("change", function() {
 <?php include "includes/footer.php"; ?>
 </body>
 </html>
-
