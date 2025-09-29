@@ -121,10 +121,8 @@ if (isset($_POST['verify_otp'])) {
                 $_SESSION['verified_email'] = $email;
                 unset($_SESSION['pending_email']);
 
-                // echo "<script>
-                //     alert('OTP verified! Please complete your registration.');
-                //     window.location.href = 'more_info.php';
-                // </script>";
+                // ✅ Redirect to more_info.php after successful OTP verification
+                header("Location: more_info.php");
                 exit;
             } else {
                 $error = "OTP expired. Please request a new one.";

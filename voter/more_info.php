@@ -1,4 +1,4 @@
-<?php  
+<?php
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -166,22 +166,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <textarea name="address" class="form-control" rows="2" placeholder="Enter your full address"></textarea>
             </div>
 
+            <!-- State / District / Constituency dropdowns -->
             <div class="mb-3">
                 <label class="form-label">State</label>
-                <input type="text" name="state" class="form-control" placeholder="Enter your state" required>
+                <select name="state" id="stateSelect" class="form-control" required>
+                    <option value="">-- Select State --</option>
+                    <?php
+                    foreach ($state_json as $stateName => $districts) {
+                        echo "<option value=\"$stateName\">$stateName</option>";
+                    }
+                    ?>
+                </select>
             </div>
 
-            <!-- District & Constituency dynamic selects -->
             <div class="mb-3">
                 <label class="form-label">District</label>
                 <select name="district" id="districtSelect" class="form-control" required>
                     <option value="">-- Select District --</option>
-                    <?php
-                    // assuming your state.json structure: {"Kerala": {"DistrictName": ["const1","const2"], ...}}
-                    foreach ($state_json['Kerala'] as $district => $constituencies) {
-                        echo "<option value=\"$district\">$district</option>";
-                    }
-                    ?>
                 </select>
             </div>
 
@@ -218,15 +219,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <script>
 const stateData = <?php echo json_encode($state_json); ?>;
+const stateSelect = document.getElementById('stateSelect');
 const districtSelect = document.getElementById('districtSelect');
 const constituencySelect = document.getElementById('constituencySelect');
 
+stateSelect.addEventListener('change', function() {
+    const state = this.value;
+    districtSelect.innerHTML = '<option value="">-- Select District --</option>';
+    constituencySelect.innerHTML = '<option value="">-- Select Constituency --</option>';
+    if (state && stateData[state]) {
+        for (const district in stateData[state]) {
+            const opt = document.createElement('option');
+            opt.value = district;
+            opt.textContent = district;
+            districtSelect.appendChild(opt);
+        }
+    }
+});
+
 districtSelect.addEventListener('change', function() {
+    const state = stateSelect.value;
     const district = this.value;
     constituencySelect.innerHTML = '<option value="">-- Select Constituency --</option>';
-    if (district && stateData["Kerala"][district]) {
-        stateData["Kerala"][district].forEach(c => {
-            constituencySelect.innerHTML += `<option value="${c}">${c}</option>`;
+    if (state && district && stateData[state][district]) {
+        stateData[state][district].forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = c;
+            opt.textContent = c;
+            constituencySelect.appendChild(opt);
         });
     }
 });
@@ -240,7 +260,6 @@ const confirmMsg    = document.getElementById('confirmMessage');
 passwordField.addEventListener('input', () => {
     const value = passwordField.value;
     const pattern = /^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
-
     if (!pattern.test(value)) {
         passwordMsg.textContent = "⚠️ Must have 1 capital, 1 number, 1 symbol & min 8 characters.";
         passwordMsg.classList.remove("text-success");
