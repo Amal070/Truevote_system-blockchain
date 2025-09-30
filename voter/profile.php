@@ -23,6 +23,11 @@ if (!$user) {
     exit;
 }
 
+// Set session variables for header
+$_SESSION['full_name'] = $user['full_name'];
+$_SESSION['voter_id'] = $user['voter_id'];
+$_SESSION['profile_pic'] = $user['profile_image'];
+
 // Profile image path
 if (!empty($user['profile_image'])) {
     $profile_image = "../" . ltrim($user['profile_image'], "/");

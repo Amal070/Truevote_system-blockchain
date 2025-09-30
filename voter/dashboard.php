@@ -27,6 +27,11 @@ $profileImg = "../uploads/profile/default.png";
 if (!empty($imageFile) && file_exists(__DIR__ . "/../uploads/profile/" . $imageFile)) {
     $profileImg = "../uploads/profile/" . $imageFile;
 }
+
+// Set session variables for header
+$_SESSION['full_name'] = $name;
+$_SESSION['voter_id'] = $voterId;
+$_SESSION['profile_pic'] = $imageFile;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -35,6 +40,7 @@ if (!empty($imageFile) && file_exists(__DIR__ . "/../uploads/profile/" . $imageF
   <title>Voter Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {margin:0;font-family:Arial,sans-serif;background-color:#111827;color:white;display:flex;flex-direction:column;min-height:100vh;}
     .container {padding:20px;flex:1;}
@@ -89,30 +95,7 @@ if (!empty($imageFile) && file_exists(__DIR__ . "/../uploads/profile/" . $imageF
 </head>
 <body>
 
-<header class="voter-gradient">
-  <div class="left">
-    <div class="logo"><i class="fas fa-vote-yea text-white"></i></div>
-    <div>
-      <div class="title">TrueVote</div>
-      <div style="font-size:12px;color:#e0e0e0;">Secure Digital Voting</div>
-    </div>
-    <nav class="desktop-nav">
-      <a href="dashboard.php">Dashboard</a>
-      <a href="elections.php">Elections</a>
-      <a href="history.php">History</a>
-      <a href="results.php">Results</a>
-      <a href="profile.php">Profile</a>
-      <a href="../logout.php">Logout</a>
-    </nav>
-  </div>
-  <div class="profile">
-    <img src="<?= htmlspecialchars($profileImg) ?>" alt="Profile">
-    <div>
-      <div><?= htmlspecialchars($name) ?></div>
-      <div style="font-size:12px;color:#ddd;">Voter ID: <?= htmlspecialchars($voterId) ?></div>
-    </div>
-  </div>
-</header>
+<?php include "includes/header.php"; ?>
 
 <div class="container">
   <h2>Welcome, <?= htmlspecialchars($name) ?>!</h2>
@@ -175,15 +158,7 @@ if (!empty($imageFile) && file_exists(__DIR__ . "/../uploads/profile/" . $imageF
   </div>
 </div>
 
-<!-- ✅ Footer -->
-<footer>
-  <div>© 2025 TrueVote. All Rights Reserved.</div>
-  <div class="social">
-    <a href="#"><i class="fab fa-twitter"></i></a>
-    <a href="#"><i class="fab fa-facebook"></i></a>
-    <a href="#"><i class="fab fa-github"></i></a>
-  </div>
-</footer>
+<?php include "includes/footer.php"; ?>
 
 </body>
 </html>
