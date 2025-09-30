@@ -205,9 +205,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     <span class="text-green-400"><i class="fas fa-link mr-1"></i>Connected</span>
                 </div>
 
-                <button class="w-full border border-gray-500 py-2 rounded hover:bg-gray-600">
+                <a href="change_password.php" class="w-full border border-gray-500 py-2 rounded hover:bg-gray-600 inline-block text-center">
                     <i class="fas fa-key mr-2"></i>Change Password
-                </button>
+                </a>
             </div>
         </div>
     </div>
