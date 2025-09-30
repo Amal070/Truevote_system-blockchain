@@ -177,7 +177,39 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             </form>
         </div>
 
-        <!-- Right column (security settings) omitted for brevity -->
+        <!-- Security Settings Card -->
+        <div class="bg-gray-800 rounded-xl p-6">
+            <h2 class="text-xl font-bold mb-6"><i class="fas fa-shield-alt mr-2"></i>Security Settings</h2>
+            <div class="space-y-4">
+                <div class="flex justify-between items-center p-3 bg-gray-700 rounded">
+                    <div>
+                        <h3>Two-Factor Authentication</h3>
+                        <p class="text-sm text-gray-300">Extra layer of security</p>
+                    </div>
+                    <span class="text-green-400"><i class="fas fa-check-circle mr-1"></i>Enabled</span>
+                </div>
+
+                <div class="flex justify-between items-center p-3 bg-gray-700 rounded">
+                    <div>
+                        <h3>Email Notifications</h3>
+                        <p class="text-sm text-gray-300">Receive election updates</p>
+                    </div>
+                    <input type="checkbox" checked class="h-5 w-10">
+                </div>
+
+                <div class="flex justify-between items-center p-3 bg-gray-700 rounded">
+                    <div>
+                        <h3>Blockchain Verification</h3>
+                        <p class="text-sm text-gray-300">Votes secured on blockchain</p>
+                    </div>
+                    <span class="text-green-400"><i class="fas fa-link mr-1"></i>Connected</span>
+                </div>
+
+                <button class="w-full border border-gray-500 py-2 rounded hover:bg-gray-600">
+                    <i class="fas fa-key mr-2"></i>Change Password
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -219,4 +251,5 @@ districtSelect.addEventListener('change', function() {
 <?php include "includes/footer.php"; ?>
 </body>
 </html>
+
 

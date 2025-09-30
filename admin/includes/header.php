@@ -212,13 +212,7 @@ header {
     </div>
   </div>
 
-  <div class="dropdown">
-    <a href="#"><i class="fas fa-users"></i>Candidates<i class="fas fa-chevron-down" style="font-size:0.6rem;"></i></a>
-    <div class="dropdown-content">
-      <a href="add_candidates.php"><i class="fas fa-user-plus"></i> Add Candidate</a>
-      <a href="view_candidates.php"><i class="fas fa-list"></i> View Candidates</a>
-    </div>
-  </div>
+  <a href="view_candidates.php"><i class="fas fa-users"></i>Candidates</a>
 
   <a href="manage_voters.php"><i class="fas fa-user-check"></i>Voters</a>
   <a href="blockchain_records.php"><i class="fas fa-link"></i>Blockchain</a>

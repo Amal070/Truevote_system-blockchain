@@ -78,7 +78,7 @@ $elections = $electionsStmt->fetchAll(PDO::FETCH_ASSOC);
                                 <div class="candidate-party">Constituency: <?= htmlspecialchars($election['constituency']) ?></div>
 
                                 <!-- View More Button -->
-                                <a href="view_candidate.php?id=<?= $c['id'] ?>" class="view-btn">View More</a>
+                                <a href="candidates_more.php?id=<?= $c['id'] ?>" class="view-btn">View More</a>
                             </div>
                         <?php endforeach; ?>
                     </div>
