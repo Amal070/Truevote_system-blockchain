@@ -44,19 +44,7 @@ $_SESSION['profile_pic'] = $imageFile;
   <style>
     body {margin:0;font-family:Arial,sans-serif;background-color:#111827;color:white;display:flex;flex-direction:column;min-height:100vh;}
     .container {padding:20px;flex:1;}
-    header.voter-gradient {
-      background:linear-gradient(to right,#2563eb,#4f46e5);
-      padding:15px 20px;
-      color:white;
-      display:flex;justify-content:space-between;align-items:center;
-    }
-    header .left {display:flex;align-items:center;gap:10px;}
-    header .left .logo {width:40px;height:40px;background:#3b82f6;border-radius:8px;display:flex;align-items:center;justify-content:center;}
-    header .left .title {font-size:20px;font-weight:bold;}
-    header nav a {color:white;text-decoration:none;margin-left:15px;}
-    header nav a:hover {text-decoration:underline;}
-    .profile {display:flex;align-items:center;gap:10px;}
-    .profile img {width:40px;height:40px;border-radius:50%;object-fit:cover;}
+
     .btn {padding:10px 16px;border-radius:8px;border:none;cursor:pointer;font-weight:bold;margin-right:10px;}
     .btn-primary {background:white;color:#2563eb;}
     .btn-secondary {background:#1f2937;color:white;}
