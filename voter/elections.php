@@ -35,7 +35,6 @@ unset($_SESSION['vote_message']);
 if (isset($_POST['register_election'])) {
     $election_id = intval($_POST['election_id']);
     try {
-        // 👇 changed user_id → voter_id
         $stmt = $pdo->prepare("SELECT * FROM election_registrations WHERE election_id=? AND voter_id=?");
         $stmt->execute([$election_id, $user_id]);
 
@@ -57,10 +56,10 @@ $stmt->execute([$voter_constituency]);
 $elections = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 function getElectionStatus($election, $today) {
-    if ($today < $election['registration_start_date']) return "upcoming"; // Before registration starts
-    if ($today >= $election['registration_start_date'] && $today <= $election['registration_end_date']) return "registration"; // Registration period
-    if ($today >= $election['polling_start_date'] && $today <= $election['polling_end_date']) return "voting"; // Voting period
-    if ($today > $election['polling_end_date']) return "past"; // Counting/Results
+    if ($today < $election['registration_start_date']) return "upcoming";
+    if ($today >= $election['registration_start_date'] && $today <= $election['registration_end_date']) return "registration";
+    if ($today >= $election['polling_start_date'] && $today <= $election['polling_end_date']) return "voting";
+    if ($today > $election['polling_end_date']) return "past";
     return "unknown";
 }
 ?>
@@ -70,12 +69,8 @@ function getElectionStatus($election, $today) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Elections - TrueVote</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <!-- Google Fonts - Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -160,7 +155,15 @@ function getElectionStatus($election, $today) {
                     ?>
                     <?php if ($check->rowCount() > 0): ?>
                         <?php
-                        $cand_stmt = $pdo->prepare("SELECT * FROM candidates WHERE election_id = ?");
+                        // Check if voter has already voted
+                        $vote_check = $pdo->prepare("SELECT * FROM votes WHERE election_id=? AND voter_id=?");
+                        $vote_check->execute([$election['id'], $user_id]);
+                        $has_voted = $vote_check->rowCount() > 0;
+                        ?>
+                        <?php if (!$has_voted): ?>
+                        <?php
+                        // Fetch candidates and ensure NOTA (id=1) comes last
+                        $cand_stmt = $pdo->prepare("SELECT * FROM candidates WHERE election_id = ? ORDER BY (id = 1) ASC, id ASC");
                         $cand_stmt->execute([$election['id']]);
                         $candidates = $cand_stmt->fetchAll(PDO::FETCH_ASSOC);
                         ?>
@@ -170,36 +173,36 @@ function getElectionStatus($election, $today) {
                                     <div class="flex items-center">
                                         <div>
                                             <p class="text-gray-200 font-semibold"><?= htmlspecialchars($candidate['name']) ?></p>
-                                            <p class="text-gray-400 text-sm">Party: <?= htmlspecialchars($candidate['party_name'] ?? 'Independent') ?></p>
+                                            <!-- <p class="text-gray-400 text-sm">Party: <?= htmlspecialchars($candidate['party_name'] ?? 'Independent') ?></p> -->
                                         </div>
-                                        <img src="../<?= htmlspecialchars($candidate['symbol']) ?>" alt="Symbol" class="w-12 h-12 ml-6">
+                                        <?php if (!empty($candidate['symbol'])): ?>
+                                            <img src="../<?= htmlspecialchars($candidate['symbol']) ?>" alt="Symbol" class="w-12 h-12 ml-6">
+                                        <?php endif; ?>
                                     </div>
                                     <form method="post" action="cast_vote.php" class="ml-6">
                                         <input type="hidden" name="election_id" value="<?= $election['id'] ?>">
                                         <input type="hidden" name="candidate_id" value="<?= $candidate['id'] ?>">
-                                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-sm font-semibold transition-colors duration-200">
-                                            Vote
-                                        </button>
+                                        <?php if ($candidate['id'] == 1): ?>
+                                            <!-- NOTA Button -->
+                                            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg text-sm font-semibold transition-colors duration-200">
+                                                NOTA
+                                            </button>
+                                        <?php else: ?>
+                                            <!-- Normal Candidate -->
+                                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-sm font-semibold transition-colors duration-200">
+                                                Vote
+                                            </button>
+                                        <?php endif; ?>
                                     </form>
                                 </div>
                             <?php endforeach; ?>
-                            <!-- NOTA Option -->
-                            <div class="w-3/4 bg-gray-700 p-4 rounded-lg flex items-center justify-between mb-6">
-                                <div class="flex items-center">
-                                    <div>
-                                        <p class="text-gray-200 font-semibold">None of the above</p>
-                                    </div>
-                                </div>
-                                <form method="post" action="cast_vote.php" class="ml-6">
-                                    <input type="hidden" name="election_id" value="<?= $election['id'] ?>">
-                                    <input type="hidden" name="nota" value="1">
-                                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg text-sm font-semibold transition-colors duration-200">
-                                        NOTA
-                                    </button>
-                                </form>
-                            </div>
                         </div>
-                        <button type="button" onclick="openVoteModal(<?= $election['id'] ?>)" class="inline-block mt-4 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg text-sm font-semibold transition-colors duration-200">Vote Now</button>
+                        <?php endif; ?>
+                        <?php if ($has_voted): ?>
+                            <button type="button" class="inline-block mt-4 bg-gray-600 text-white px-6 py-2 rounded-lg text-sm font-semibold cursor-not-allowed" disabled>Voted</button>
+                        <?php else: ?>
+                            <button type="button" onclick="openVoteModal(<?= $election['id'] ?>)" class="inline-block mt-4 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg text-sm font-semibold transition-colors duration-200">Vote Now</button>
+                        <?php endif; ?>
                     <?php else: ?>
                         <span class="inline-block mt-4 text-red-500 font-semibold text-sm">❌ Not Registered</span>
                     <?php endif; ?>
@@ -222,8 +225,6 @@ function getElectionStatus($election, $today) {
         <?php endforeach; ?>
     </div>
 </div>
-
-
 
 <?php include "includes/footer.php"; ?>
 
@@ -262,6 +263,18 @@ function getElectionStatus($election, $today) {
     </div>
 </div>
 
+<!-- Confirmation Modal -->
+<div id="confirm-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+    <div class="bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full mx-4">
+        <h3 class="text-xl font-bold mb-4 text-gray-200">Confirm Vote</h3>
+        <p id="confirm-message" class="mb-4 text-gray-300"></p>
+        <div class="flex space-x-4">
+            <button id="confirm-yes" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors duration-200">Yes</button>
+            <button id="confirm-no" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors duration-200">No</button>
+        </div>
+    </div>
+</div>
+
 <script>
 function openModal(electionId, title) {
     document.getElementById('modal-election-id').value = electionId;
@@ -277,10 +290,43 @@ function openVoteModal(electionId) {
     const candidatesHtml = document.getElementById('candidates-' + electionId).innerHTML;
     document.getElementById('vote-modal-content').innerHTML = candidatesHtml;
     document.getElementById('vote-modal').classList.remove('hidden');
+
+    // Add event listeners to vote buttons for confirmation
+    const voteButtons = document.querySelectorAll('#vote-modal-content button[type="submit"]');
+    voteButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const form = this.closest('form');
+            const candidateId = form.querySelector('input[name="candidate_id"]').value;
+            let message = '';
+            if (candidateId == 1) {
+                message = 'You want to make vote NOTA?';
+            } else {
+                const candidateName = form.previousElementSibling.querySelector('p.font-semibold').textContent;
+                message = `You want to vote for ${candidateName}?`;
+            }
+            openConfirmModal(message, form);
+        });
+    });
 }
 
 function closeVoteModal() {
     document.getElementById('vote-modal').classList.add('hidden');
+}
+
+function openConfirmModal(message, form) {
+    document.getElementById('confirm-message').textContent = message;
+    document.getElementById('confirm-modal').classList.remove('hidden');
+    document.getElementById('confirm-yes').onclick = function() {
+        form.submit();
+    };
+    document.getElementById('confirm-no').onclick = function() {
+        closeConfirmModal();
+    };
+}
+
+function closeConfirmModal() {
+    document.getElementById('confirm-modal').classList.add('hidden');
 }
 </script>
 

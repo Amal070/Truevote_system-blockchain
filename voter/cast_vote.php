@@ -11,7 +11,6 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 
 $message = "";
-
 // Handle vote submission
 if (isset($_POST['election_id']) && isset($_POST['candidate_id'])) {
     $election_id = intval($_POST['election_id']);
@@ -31,7 +30,7 @@ if (isset($_POST['election_id']) && isset($_POST['candidate_id'])) {
                 $message = "⚠️ You have already voted in this election.";
             } else {
                 // Insert vote
-                $insert = $pdo->prepare("INSERT INTO votes (election_id, voter_id, candidate_id, voted_at) VALUES (?, ?, ?, NOW())");
+                $insert = $pdo->prepare("INSERT INTO votes (election_id, voter_id, candidate_id) VALUES (?, ?, ?)");
                 $insert->execute([$election_id, $user_id, $candidate_id]);
                 $message = "✅ Your vote has been cast successfully!";
             }
