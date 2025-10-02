@@ -29,9 +29,11 @@ if (isset($_POST['election_id']) && isset($_POST['candidate_id'])) {
             if ($vote_check->rowCount() > 0) {
                 $message = "⚠️ You have already voted in this election.";
             } else {
+                // Determine vote_count: 1 for candidate vote, 0 for NOTA
+                $vote_count = ($candidate_id == 1) ? 0 : 1;
                 // Insert vote
-                $insert = $pdo->prepare("INSERT INTO votes (election_id, voter_id, candidate_id) VALUES (?, ?, ?)");
-                $insert->execute([$election_id, $user_id, $candidate_id]);
+                $insert = $pdo->prepare("INSERT INTO votes (election_id, voter_id, candidate_id, vote_count) VALUES (?, ?, ?, ?)");
+                $insert->execute([$election_id, $user_id, $candidate_id, $vote_count]);
                 $message = "✅ Your vote has been cast successfully!";
             }
         }
