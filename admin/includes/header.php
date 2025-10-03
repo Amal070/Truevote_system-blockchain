@@ -216,7 +216,7 @@ header {
 
   <a href="manage_voters.php"><i class="fas fa-user-check"></i>Voters</a>
   <a href="blockchain_records.php"><i class="fas fa-link"></i>Blockchain</a>
-  <a href="publish_results.php"><i class="fas fa-chart-bar"></i>Results</a>
+  <a href="results.php"><i class="fas fa-chart-bar"></i>Results</a>
   <a href="manage_users.php"><i class="fas fa-file-alt"></i>Logs</a>
   <a href="../logout.php"><i class="fas fa-cog"></i>Logout</a>
 </div>
