@@ -31,10 +31,27 @@ if (isset($_POST['election_id']) && isset($_POST['candidate_id'])) {
             } else {
                 // Determine vote_count: 1 for candidate vote, 0 for NOTA
                 $vote_count = ($candidate_id == 1) ? 0 : 1;
-                // Insert vote
-                $insert = $pdo->prepare("INSERT INTO votes (election_id, voter_id, candidate_id, vote_count) VALUES (?, ?, ?, ?)");
-                $insert->execute([$election_id, $user_id, $candidate_id, $vote_count]);
+
+                // blockchain area start
+                // $output = shell_exec("python contract_deploy.py 2>&1"); //working
+                // Escape to avoid shell injection
+                $cmd = escapeshellcmd("python contract_deploy.py $election_id $candidate_id $user_id");
+                $output = shell_exec($cmd);
+                $result = json_decode($output, true);
+
+                if (isset($result['error'])) {
+                    throw new Exception("Blockchain transaction failed: " . $result['error']);
+                }
+                $tx_hash = $result['tx_hash'];
+                $contract_address = $result['contract_address'];
+                // blockchain area end
+                
+                
+                // Insert vote   
+                $insert = $pdo->prepare("INSERT INTO votes (election_id, voter_id, candidate_id, transaction_hash, contract_address, vote_count) VALUES (?, ?, ?, ?, ?, ?)");
+                $insert->execute([$election_id, $user_id, $candidate_id, $tx_hash, $contract_address, $vote_count]);
                 $message = "✅ Your vote has been cast successfully!";
+                // $message = "✅ Your vote has been cast successfully!, tx_hash:$tx_hash | contract : $contract_address ";
             }
         }
     } catch (Exception $e) {
