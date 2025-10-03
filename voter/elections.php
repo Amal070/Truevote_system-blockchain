@@ -155,13 +155,6 @@ function getElectionStatus($election, $today) {
                     ?>
                     <?php if ($check->rowCount() > 0): ?>
                         <?php
-                        // Check if voter has already voted
-                        $vote_check = $pdo->prepare("SELECT * FROM votes WHERE election_id=? AND voter_id=?");
-                        $vote_check->execute([$election['id'], $user_id]);
-                        $has_voted = $vote_check->rowCount() > 0;
-                        ?>
-                        <?php if (!$has_voted): ?>
-                        <?php
                         // Fetch candidates and ensure NOTA (id=1) comes last
                         $cand_stmt = $pdo->prepare("SELECT * FROM candidates WHERE election_id = ? ORDER BY (id = 1) ASC, id ASC");
                         $cand_stmt->execute([$election['id']]);
@@ -197,12 +190,7 @@ function getElectionStatus($election, $today) {
                                 </div>
                             <?php endforeach; ?>
                         </div>
-                        <?php endif; ?>
-                        <?php if ($has_voted): ?>
-                            <button type="button" class="inline-block mt-4 bg-gray-600 text-white px-6 py-2 rounded-lg text-sm font-semibold cursor-not-allowed" disabled>Voted</button>
-                        <?php else: ?>
-                            <button type="button" onclick="openVoteModal(<?= $election['id'] ?>)" class="inline-block mt-4 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg text-sm font-semibold transition-colors duration-200">Vote Now</button>
-                        <?php endif; ?>
+                        <button type="button" onclick="openVoteModal(<?= $election['id'] ?>)" class="inline-block mt-4 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg text-sm font-semibold transition-colors duration-200">Vote Now</button>
                     <?php else: ?>
                         <span class="inline-block mt-4 text-red-500 font-semibold text-sm">❌ Not Registered</span>
                     <?php endif; ?>
@@ -323,11 +311,6 @@ function openConfirmModal(message, form) {
     document.getElementById('confirm-no').onclick = function() {
         closeConfirmModal();
     };
-}
-
-function closeConfirmModal() {
-    document.getElementById('confirm-modal').classList.add('hidden');
-}
 </script>
 
 </body>
