@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Sep 30, 2025 at 10:19 AM
+-- Generation Time: Oct 08, 2025 at 12:12 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -46,6 +46,7 @@ CREATE TABLE `candidates` (
 --
 
 INSERT INTO `candidates` (`id`, `election_id`, `candidate_code`, `name`, `gender`, `party_name`, `symbol`, `age`, `photo`, `manifesto`, `created_at`) VALUES
+(1, 2, 'NOTA_68d8d415cd40e', 'None of the above', 'Other', 'No', NULL, NULL, NULL, NULL, '2025-10-02 13:08:06'),
 (2, 1, 'CAND_68d8d415cd40e', 'MODI', 'Male', 'BJP', 'uploads/candidates/symbols/1759040533_1758614260_8eb338b3ad4791289d56318188f1fcf1.jpg', 75, 'uploads/candidates/photos/1759040533_1758614260_download.png', 'jai kissan ', '2025-09-28 06:22:13'),
 (3, 2, 'CAND_68d9c7871d2b2', 'Justin', 'Male', 'UDF', 'uploads/candidates/symbols/1759102855_download.jfif', 24, 'uploads/candidates/photos/1759102855_1758614260_download.png', 'jai kiassan', '2025-09-28 23:40:55'),
 (4, 2, 'CAND_68db63dc4e8e4', 'Akash', 'Male', 'BJP', 'uploads/candidates/symbols/1759208412_1759040533_1758614260_8eb338b3ad4791289d56318188f1fcf1.jpg', 22, 'uploads/candidates/photos/1759208412_1758614848_download.png', 'jai kissan', '2025-09-30 05:00:12');
@@ -68,6 +69,7 @@ CREATE TABLE `elections` (
   `registration_end_date` date NOT NULL,
   `polling_start_date` date NOT NULL,
   `polling_end_date` date NOT NULL,
+  `publish_result` enum('0','1') NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -75,9 +77,9 @@ CREATE TABLE `elections` (
 -- Dumping data for table `elections`
 --
 
-INSERT INTO `elections` (`id`, `election_code`, `title`, `election_type`, `constituency`, `description`, `announcement_date`, `registration_start_date`, `registration_end_date`, `polling_start_date`, `polling_end_date`, `created_at`) VALUES
-(1, 'NAT2026', 'National Presidential Election 2026', 'Lok Sabha Elections (National)', 'Kottayam', 'Election to elect the President of the country.', '2025-09-25', '2025-09-23', '2026-04-27', '2026-05-28', '2026-05-30', '2025-09-22 00:54:25'),
-(2, 'SLA25', 'State Legislative Assembly Elections (Vidhan Sabha) 2025', 'State Legislative Assembly Elections (Vidhan Sabha)', 'Kottayam', 'Election to choose representatives for the State Legislative Assembly', '2025-09-01', '2025-09-22', '2025-09-27', '2025-09-28', '2025-09-30', '2025-09-28 15:14:19');
+INSERT INTO `elections` (`id`, `election_code`, `title`, `election_type`, `constituency`, `description`, `announcement_date`, `registration_start_date`, `registration_end_date`, `polling_start_date`, `polling_end_date`, `publish_result`, `created_at`) VALUES
+(1, 'NAT2026', 'National Presidential Election 2026', 'Lok Sabha Elections (National)', 'Kottayam', 'Election to elect the President of the country.', '2025-09-25', '2025-09-23', '2026-04-27', '2026-05-28', '2026-05-30', '0', '2025-09-22 00:54:25'),
+(2, 'SLA25', 'State Legislative Assembly Elections (Vidhan Sabha) 2025', 'State Legislative Assembly Elections (Vidhan Sabha)', 'Kottayam', 'Election to choose representatives for the State Legislative Assembly', '2025-09-01', '2025-09-22', '2025-09-27', '2025-09-28', '2025-10-03', '1', '2025-09-28 15:14:19');
 
 -- --------------------------------------------------------
 
@@ -98,7 +100,9 @@ CREATE TABLE `election_registrations` (
 
 INSERT INTO `election_registrations` (`id`, `election_id`, `voter_id`, `registered_at`) VALUES
 (1, 1, 1, '2025-09-28 09:51:53'),
-(2, 2, 1, '2025-09-28 23:54:00');
+(2, 2, 1, '2025-09-28 23:54:00'),
+(3, 2, 8, '2025-10-03 10:34:24'),
+(4, 1, 8, '2025-10-04 09:34:45');
 
 -- --------------------------------------------------------
 
@@ -132,7 +136,14 @@ INSERT INTO `otp_verification` (`otp_id`, `user_id`, `email`, `otp_code`, `expir
 (9, NULL, 'subbzero070@gmail.com', '841712', '2025-09-24 09:14:01', 1, '2025-09-24 14:39:30', '2025-09-24 09:09:01'),
 (10, NULL, 'amalshaji7cr7@gmail.com', '199304', '2025-09-25 09:44:26', 1, '2025-09-25 15:09:56', '2025-09-25 09:39:26'),
 (11, NULL, 'ig.nova0707@gmail.com', '170099', '2025-09-27 08:09:59', 1, '2025-09-27 13:35:45', '2025-09-27 08:04:59'),
-(13, NULL, 'justinjob19@gmail.com', '675191', '2025-09-29 08:22:07', 1, '2025-09-29 13:47:41', '2025-09-29 08:17:07');
+(13, NULL, 'justinjob19@gmail.com', '675191', '2025-09-29 08:22:07', 1, '2025-09-29 13:47:41', '2025-09-29 08:17:07'),
+(14, NULL, 'norepaly.dogspot@gmail.com', '755046', '2025-09-30 14:23:27', 0, NULL, '2025-09-30 14:18:27'),
+(15, NULL, 'noreplay.dogspot@gmail.com', '738723', '2025-09-30 14:25:19', 1, '2025-09-30 19:51:05', '2025-09-30 14:20:19'),
+(16, NULL, 'subbzero070@gmail.com', '689197', '2025-09-30 16:42:40', 1, '2025-09-30 22:09:27', '2025-09-30 16:37:40'),
+(17, NULL, 'noreplay.dogspot@gmail.com', '323998', '2025-09-30 16:45:00', 0, NULL, '2025-09-30 16:40:00'),
+(18, NULL, 'noreplay.dogspot@gmail.com', '637587', '2025-09-30 16:45:45', 0, NULL, '2025-09-30 16:40:45'),
+(19, NULL, 'estbizone@gmail.com', '234526', '2025-09-30 16:50:44', 0, NULL, '2025-09-30 16:45:44'),
+(20, NULL, 'estbiezone@gmail.com', '608689', '2025-09-30 16:52:15', 0, NULL, '2025-09-30 16:47:15');
 
 -- --------------------------------------------------------
 
@@ -165,13 +176,14 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `voter_id`, `full_name`, `father_name`, `gender`, `dob`, `address`, `state`, `district`, `constituency`, `email`, `phone`, `profile_image`, `password`, `role`, `status`, `created_at`) VALUES
-(1, 'KLKT0001001', 'Ajith Kumar', 'K. Suresh', 'Male', '1992-03-12', 'Shanti Nilayam, Chandanapally, Kottayam,Kerala — 686001', 'Kerala', 'Kottayam', 'Kottayam', 'ig.nova0707@gmail.com', '9383837646', 'uploads/profile/1758960965_passport_size_m.jpg', '$2y$10$Bz6nRNiDCkwkK7Q7kU34T.6Oy6aL9t.aKgCJAE31Bsxe1KC95E03q', 'voter', 'approved', '2025-09-07 06:01:35'),
-(2, '123456789112', 'amal shaji', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'amalshaji7cr7@gmail.com', '9383837645', NULL, '$2y$10$B7pykimiUI.SOIXIedRX3OgLIAxpuNTdXhpm4qz4sNuHDpEvHE1XC', 'voter', 'approved', '2025-09-07 06:53:12'),
-(3, '133455554545', 'admin', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'admin123@gmail.com', '9867656566', 'uploads/profile/default.jpg', '$2y$10$AEZADZh63V7wBM7gtzu5GemoUmDACNGpP0ytNzvSQszY9nwHeVfyC', 'admin', 'approved', '2025-09-07 10:29:09'),
-(4, '123456789116', 'Justin Job', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'justinjob095@gmail.com', '9383837623', NULL, '$2y$10$4IDZiyofv4h1GkU9iPZkoe6HKRicOmr9v3qRgcX0N3iZmUO6tFhyi', 'voter', 'approved', '2025-09-09 09:05:41'),
-(5, '32', 'aaa', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'ananthus952@gmail.com', '89', NULL, '$2y$10$G1R8lad0L1e4OhGFQHSRYuj0zhghrFBZhzTuyzYbPm1WLQJ92LG6q', 'voter', 'approved', '2025-09-16 09:43:23'),
-(6, '123456789117', 'Akash', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'subbzero070@gmail.com', '9383837645', 'uploads/profile/1758722697_download.png', '$2y$10$QC57bg1q.UKjnmCTsnljA.vMI1azC5P0febp21avTDBZMvqGlQObu', 'voter', 'approved', '2025-09-18 01:00:07'),
-(7, 'KLKT0001002', 'Justin Job', 'P V Job', 'Male', '2001-07-31', '', 'Kerala', 'Kottayam', 'Kottayam', 'justinjob19@gmail.com', '9383837344', NULL, '$2y$10$7xyvRT/4b9LteWtVj9Vx9e3RIIIUgEDwU.LJGPg/OdO0iPmgSoHD.', 'voter', 'approved', '2025-09-29 08:48:30');
+(1, 'KLN0012367', 'Rohan Menon', 'K P Menon', 'Male', '1990-05-22', '21 Hill View', 'Kerala', 'Kottayam', 'Kottayam', 'ig.nova0707@gmail.com', '9383837646', 'uploads/profile/1758960965_passport_size_m.jpg', '$2y$10$Bz6nRNiDCkwkK7Q7kU34T.6Oy6aL9t.aKgCJAE31Bsxe1KC95E03q', 'voter', 'approved', '2025-09-07 06:01:35'),
+(2, 'KLN0012373', 'amal shaji', NULL, NULL, NULL, NULL, 'Kerala', 'Kottayam', 'Kottayam', 'amalshaji7cr7@gmail.com', '9383837645', NULL, '$2y$10$B7pykimiUI.SOIXIedRX3OgLIAxpuNTdXhpm4qz4sNuHDpEvHE1XC', 'voter', 'rejected', '2025-09-07 06:53:12'),
+(3, '601334555', 'admin', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'admin123@gmail.com', '9867656566', 'uploads/profile/default.jpg', '$2y$10$AEZADZh63V7wBM7gtzu5GemoUmDACNGpP0ytNzvSQszY9nwHeVfyC', 'admin', 'approved', '2025-09-07 10:29:09'),
+(4, 'KLN0012360', 'Aanya George', 'George Mathew', 'Female', '1995-11-19', '32 Lake Road', 'Kerala', 'Kottayam', 'Kottayam', 'justinjob095@gmail.com', '9383837623', NULL, '$2y$10$4IDZiyofv4h1GkU9iPZkoe6HKRicOmr9v3qRgcX0N3iZmUO6tFhyi', 'voter', 'approved', '2025-09-09 09:05:41'),
+(5, 'KLN0012361', 'Ridhaan Rajesh', 'Rajesh Varma', 'Male', '1992-04-25', '11 MG Road', 'Kerala', 'Kottayam', 'Kottayam', 'ananthus952@gmail.com', '89', NULL, '$2y$10$G1R8lad0L1e4OhGFQHSRYuj0zhghrFBZhzTuyzYbPm1WLQJ92LG6q', 'voter', 'approved', '2025-09-16 09:43:23'),
+(6, 'KLN0012363', 'Krishna Kurian', 'Kurian Nair', 'Male', '1991-12-09', '23 Hill View', 'Kerala', 'Kottayam', 'Kottayam', 'subbzero070@gmail.com', '9383837645', 'uploads/profile/1758722697_download.png', '$2y$10$bovfwths.F7hPUpYUBiB.Ojbd0hFIt3WXvjnMJ7lCklQlJ/cNQq62', 'voter', 'approved', '2025-09-18 01:00:07'),
+(7, 'KLN0012370', 'Meera Pillai', 'Pillai Gopal', 'Female', '1991-01-08', '45 Church Street', 'Kerala', 'Kottayam', 'Kottayam', 'justinjob19@gmail.com', '9383837344', NULL, '$2y$10$7xyvRT/4b9LteWtVj9Vx9e3RIIIUgEDwU.LJGPg/OdO0iPmgSoHD.', 'voter', 'approved', '2025-09-29 08:48:30'),
+(8, 'KLN0012345', 'Aarav Nair', 'Ramesh Nair', 'Male', '1990-03-12', '12 MG Road', 'Kerala', 'Kottayam', 'Kottayam', 'noreplay.dogspot@gmail.com', '9383837655', NULL, '$2y$10$61.IY5De7v/7GN0cpAUMCu5yDeG4oi7Jklk/7iYQMUPOuRsbIYpcy', 'voter', 'approved', '2025-09-30 14:26:10');
 
 -- --------------------------------------------------------
 
@@ -183,8 +195,20 @@ CREATE TABLE `votes` (
   `vote_id` int NOT NULL,
   `election_id` int NOT NULL,
   `candidate_id` int NOT NULL,
-  `vote_count` tinyint(1) NOT NULL DEFAULT '0'
-) ;
+  `voter_id` int NOT NULL,
+  `transaction_hash` char(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'vote3a8f9b64c1d72e49f6a9c83d27f51b8e914c5a63f2e7b9d1a84c7f93e05d',
+  `contract_address` char(42) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'add9f3b7c82e1a4d56f890c12de34ab56789cd1234',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `vote_count` enum('0','1') NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `votes`
+--
+
+INSERT INTO `votes` (`vote_id`, `election_id`, `candidate_id`, `voter_id`, `transaction_hash`, `contract_address`, `created_at`, `vote_count`) VALUES
+(15, 2, 3, 1, '0056a7b5b0098762da3a33609a96da7a46847e5706e1b8ee4bd8a25bbbd4d73a', '0x3A5900c41Bbf6fc26e167f65a431c7E77ED6744c', '2025-10-04 09:12:23', '1'),
+(16, 2, 3, 8, 'd94637d9668e1984784911f62c69f703df3123788a8076c569e9614bb155d428', '0x0B0058b23371f241084FF5688AF9eFa0D2C0C69B', '2025-10-04 09:35:26', '1');
 
 --
 -- Indexes for dumped tables
@@ -232,8 +256,11 @@ ALTER TABLE `users`
 --
 ALTER TABLE `votes`
   ADD PRIMARY KEY (`vote_id`),
-  ADD UNIQUE KEY `unique_vote` (`election_id`,`candidate_id`),
-  ADD KEY `fk_votes_candidate` (`candidate_id`);
+  ADD UNIQUE KEY `transaction_hash` (`transaction_hash`),
+  ADD UNIQUE KEY `contract_address` (`contract_address`),
+  ADD KEY `fk_votes_election` (`election_id`),
+  ADD KEY `fk_votes_candidate` (`candidate_id`),
+  ADD KEY `fk_votes_user` (`voter_id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -243,7 +270,7 @@ ALTER TABLE `votes`
 -- AUTO_INCREMENT for table `candidates`
 --
 ALTER TABLE `candidates`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `elections`
@@ -255,25 +282,25 @@ ALTER TABLE `elections`
 -- AUTO_INCREMENT for table `election_registrations`
 --
 ALTER TABLE `election_registrations`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `otp_verification`
 --
 ALTER TABLE `otp_verification`
-  MODIFY `otp_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `otp_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `user_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `votes`
 --
 ALTER TABLE `votes`
-  MODIFY `vote_id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `vote_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- Constraints for dumped tables
@@ -303,7 +330,8 @@ ALTER TABLE `otp_verification`
 --
 ALTER TABLE `votes`
   ADD CONSTRAINT `fk_votes_candidate` FOREIGN KEY (`candidate_id`) REFERENCES `candidates` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_votes_election` FOREIGN KEY (`election_id`) REFERENCES `elections` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `fk_votes_election` FOREIGN KEY (`election_id`) REFERENCES `elections` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_votes_user` FOREIGN KEY (`voter_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

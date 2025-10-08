@@ -40,15 +40,15 @@ function loadVoterCSV() {
 function validateUserAgainstCSV($user, $csvVoters) {
     foreach ($csvVoters as $csvVoter) {
         if (
-            strtoupper(trim($user['voter_id'])) === strtoupper(trim($csvVoter['voter_id'])) &&
-            strtoupper(trim($user['full_name'])) === strtoupper(trim($csvVoter['name'])) &&
-            strtoupper(trim($user['father_name'])) === strtoupper(trim($csvVoter['father_name'])) &&
-            strtoupper(trim($user['gender'])) === strtoupper(trim($csvVoter['gender'])) &&
-            trim($user['dob']) === trim($csvVoter['dob']) &&
-            strtoupper(trim($user['address'])) === strtoupper(trim($csvVoter['address'])) &&
-            strtoupper(trim($user['state'])) === strtoupper(trim($csvVoter['state'])) &&
-            strtoupper(trim($user['district'])) === strtoupper(trim($csvVoter['district'])) &&
-            strtoupper(trim($user['constituency'])) === strtoupper(trim($csvVoter['constituency']))
+            strtoupper(trim($user['voter_id'] ?? '')) === strtoupper(trim($csvVoter['voter_id'])) &&
+            strtoupper(trim($user['full_name'] ?? '')) === strtoupper(trim($csvVoter['name'])) &&
+            strtoupper(trim($user['father_name'] ?? '')) === strtoupper(trim($csvVoter['father_name'])) &&
+            strtoupper(trim($user['gender'] ?? '')) === strtoupper(trim($csvVoter['gender'])) &&
+            trim($user['dob'] ?? '') === trim($csvVoter['dob']) &&
+            strtoupper(trim($user['address'] ?? '')) === strtoupper(trim($csvVoter['address'])) &&
+            strtoupper(trim($user['state'] ?? '')) === strtoupper(trim($csvVoter['state'])) &&
+            strtoupper(trim($user['district'] ?? '')) === strtoupper(trim($csvVoter['district'])) &&
+            strtoupper(trim($user['constituency'] ?? '')) === strtoupper(trim($csvVoter['constituency']))
         ) {
             return true;
         }
@@ -62,30 +62,30 @@ function validateUserAgainstCSV($user, $csvVoters) {
 function getMismatchedFields($user, $csvVoters) {
     $mismatches = [];
     foreach ($csvVoters as $csvVoter) {
-        if (strtoupper(trim($user['voter_id'])) === strtoupper(trim($csvVoter['voter_id']))) {
+        if (strtoupper(trim($user['voter_id'] ?? '')) === strtoupper(trim($csvVoter['voter_id']))) {
             // Found matching voter_id, check other fields
-            if (strtoupper(trim($user['full_name'])) !== strtoupper(trim($csvVoter['name']))) {
+            if (strtoupper(trim($user['full_name'] ?? '')) !== strtoupper(trim($csvVoter['name']))) {
                 $mismatches['full_name'] = true;
             }
-            if (strtoupper(trim($user['father_name'])) !== strtoupper(trim($csvVoter['father_name']))) {
+            if (strtoupper(trim($user['father_name'] ?? '')) !== strtoupper(trim($csvVoter['father_name']))) {
                 $mismatches['father_name'] = true;
             }
-            if (strtoupper(trim($user['gender'])) !== strtoupper(trim($csvVoter['gender']))) {
+            if (strtoupper(trim($user['gender'] ?? '')) !== strtoupper(trim($csvVoter['gender']))) {
                 $mismatches['gender'] = true;
             }
-            if (trim($user['dob']) !== trim($csvVoter['dob'])) {
+            if (trim($user['dob'] ?? '') !== trim($csvVoter['dob'])) {
                 $mismatches['dob'] = true;
             }
-            if (strtoupper(trim($user['address'])) !== strtoupper(trim($csvVoter['address']))) {
+            if (strtoupper(trim($user['address'] ?? '')) !== strtoupper(trim($csvVoter['address']))) {
                 $mismatches['address'] = true;
             }
-            if (strtoupper(trim($user['state'])) !== strtoupper(trim($csvVoter['state']))) {
+            if (strtoupper(trim($user['state'] ?? '')) !== strtoupper(trim($csvVoter['state']))) {
                 $mismatches['state'] = true;
             }
-            if (strtoupper(trim($user['district'])) !== strtoupper(trim($csvVoter['district']))) {
+            if (strtoupper(trim($user['district'] ?? '')) !== strtoupper(trim($csvVoter['district']))) {
                 $mismatches['district'] = true;
             }
-            if (strtoupper(trim($user['constituency'])) !== strtoupper(trim($csvVoter['constituency']))) {
+            if (strtoupper(trim($user['constituency'] ?? '')) !== strtoupper(trim($csvVoter['constituency']))) {
                 $mismatches['constituency'] = true;
             }
             return $mismatches;
@@ -178,7 +178,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Process users for automatic approval
 foreach ($users as &$user) {
-    if ($user['status'] === 'pending' && validateUserAgainstCSV($user, $csvVoters)) {
+    if (($user['status'] === 'pending' || $user['status'] === 'rejected') && validateUserAgainstCSV($user, $csvVoters)) {
         $stmt = $pdo->prepare("UPDATE users SET status='approved' WHERE user_id=?");
         $stmt->execute([$user['user_id']]);
         $user['status'] = 'approved';
