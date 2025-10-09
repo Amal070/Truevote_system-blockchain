@@ -11,6 +11,11 @@ require_once "../db.php";
 $total_elections = $pdo->query("SELECT COUNT(*) FROM elections")->fetchColumn();
 $total_candidates = $pdo->query("SELECT COUNT(*) FROM candidates")->fetchColumn();
 $total_voters = $pdo->query("SELECT COUNT(*) FROM users WHERE role != 'admin' AND status = 'approved'")->fetchColumn();
+
+// Additional stats
+$ongoing_elections = $pdo->query("SELECT COUNT(*) FROM elections WHERE polling_start_date <= CURDATE() AND polling_end_date >= CURDATE()")->fetchColumn();
+$total_votes = $pdo->query("SELECT COUNT(*) FROM votes")->fetchColumn();
+$pending_voters = $pdo->query("SELECT COUNT(*) FROM users WHERE role != 'admin' AND status = 'pending'")->fetchColumn();
 ?>
 
 <!DOCTYPE html>
@@ -384,6 +389,50 @@ footer {
       <div class="stat-icon"><i class="fas fa-user-check"></i></div>
       <div class="stat-number"><?php echo $total_voters; ?></div>
       <div class="stat-label">Approved Voters</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fas fa-clock"></i></div>
+      <div class="stat-number"><?php echo $ongoing_elections; ?></div>
+      <div class="stat-label">Ongoing Elections</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+      <div class="stat-number"><?php echo $total_votes; ?></div>
+      <div class="stat-label">Total Votes Cast</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fas fa-hourglass-half"></i></div>
+      <div class="stat-number"><?php echo $pending_voters; ?></div>
+      <div class="stat-label">Pending Voters</div>
+    </div>
+  </div>
+
+  <!-- Recent Activity -->
+  <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; color: #f8fafc;">Recent Activity</h3>
+  <div style="background: #1e293b; padding: 1.5rem; border-radius: 0.75rem; box-shadow: 0 10px 20px rgba(0,0,0,0.3);">
+    <div style="display: flex; flex-direction: column; gap: 1rem;">
+      <?php
+      // Recent elections
+      $recent_elections = $pdo->query("SELECT title, announcement_date FROM elections ORDER BY announcement_date DESC LIMIT 3")->fetchAll(PDO::FETCH_ASSOC);
+      foreach ($recent_elections as $election) {
+        echo "<div style='display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid #334155;'>";
+        echo "<div><span style='font-weight: 500; color: #f8fafc;'>Election Announced:</span> " . htmlspecialchars($election['title']) . "</div>";
+        echo "<span style='font-size: 0.875rem; color: #cbd5e1;'>" . $election['announcement_date'] . "</span>";
+        echo "</div>";
+      }
+
+      // Recent votes
+      $recent_votes = $pdo->query("SELECT COUNT(*) as count, DATE(created_at) as date FROM votes WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 7 DAY) GROUP BY DATE(created_at) ORDER BY date DESC LIMIT 3")->fetchAll(PDO::FETCH_ASSOC);
+      foreach ($recent_votes as $vote) {
+        echo "<div style='display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid #334155;'>";
+        echo "<div><span style='font-weight: 500; color: #f8fafc;'>Votes Cast:</span> " . $vote['count'] . "</div>";
+        echo "<span style='font-size: 0.875rem; color: #cbd5e1;'>" . $vote['date'] . "</span>";
+        echo "</div>";
+      }
+      ?>
     </div>
   </div>
 </div>

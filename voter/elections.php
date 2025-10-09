@@ -148,6 +148,9 @@ function getElectionStatus($election, $today) {
                     <h3 class="font-bold text-xl mb-1 text-gray-200"><?= htmlspecialchars($election['title']) ?></h3>
                     <p class="text-sm text-gray-400 mb-2"><?= htmlspecialchars($election['description']) ?></p>
                     <p class="text-gray-300"><strong>Polling:</strong> <?= $election['polling_start_date'] ?> → <?= $election['polling_end_date'] ?></p>
+                    <div class="timer mb-4" data-end-date="<?= $election['polling_end_date'] ?> 23:59:59">
+                        <p class="text-yellow-400 font-semibold">Time Remaining: <span class="countdown"></span></p>
+                    </div>
 
                     <?php
                         $check = $pdo->prepare("SELECT * FROM election_registrations WHERE election_id=? AND voter_id=?");
@@ -328,6 +331,36 @@ function openConfirmModal(message, form) {
 function closeConfirmModal() {
     document.getElementById('confirm-modal').classList.add('hidden');
 }
+
+// Countdown Timer
+function updateCountdowns() {
+    const timers = document.querySelectorAll('.timer');
+    timers.forEach(timer => {
+        const endDateStr = timer.getAttribute('data-end-date');
+        const endDate = new Date(endDateStr).getTime();
+        const now = new Date().getTime();
+        const distance = endDate - now;
+
+        if (distance > 0) {
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            let countdownText = '';
+            if (days > 0) countdownText += days + "d ";
+            countdownText += hours + "h " + minutes + "m " + seconds + "s";
+
+            timer.querySelector('.countdown').textContent = countdownText;
+        } else {
+            timer.querySelector('.countdown').textContent = "Expired";
+        }
+    });
+}
+
+// Update countdowns every second
+setInterval(updateCountdowns, 1000);
+updateCountdowns(); // Initial call
 </script>
 
 </body>

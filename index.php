@@ -597,6 +597,170 @@
         </div>
     </section>
 
+    <!-- About Us Section -->
+    <section id="about" class="py-20" style="background-color: var(--bg-secondary);">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 fade-in">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4">
+                    About <span class="text-blue-400">TrueVote</span>
+                </h2>
+                <p class="text-xl text-gray-400 max-w-3xl mx-auto">
+                    Revolutionizing democracy through secure, transparent, and accessible digital voting technology.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div class="slide-in-left">
+                    <h3 class="text-2xl font-bold mb-6" style="color: var(--text-primary);">Our Mission</h3>
+                    <p class="text-gray-400 mb-6">
+                        TrueVote was founded with a simple yet powerful mission: to make voting more secure, accessible, and trustworthy for everyone. We believe that every voice deserves to be heard, and every vote deserves to be protected.
+                    </p>
+                    <p class="text-gray-400 mb-6">
+                        By leveraging cutting-edge blockchain technology and advanced security measures, we ensure that elections are not only fair but also verifiable by anyone, anywhere, at any time.
+                    </p>
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 bg-blue-600 bg-opacity-20 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-users text-blue-400"></i>
+                        </div>
+                        <div>
+                            <div class="font-semibold" style="color: var(--text-primary);">Trusted by Millions</div>
+                            <div class="text-sm text-gray-400">Over 250K registered voters worldwide</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slide-in-right">
+                    <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 border border-gray-700">
+                        <h4 class="text-xl font-bold mb-6 text-center" style="color: var(--text-primary);">Why Choose Us?</h4>
+                        <div class="space-y-4">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-shield-alt text-green-400"></i>
+                                <span class="text-gray-400">Military-grade security</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-clock text-blue-400"></i>
+                                <span class="text-gray-400">Real-time verification</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-globe text-purple-400"></i>
+                                <span class="text-gray-400">Global accessibility</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-check-circle text-green-400"></i>
+                                <span class="text-gray-400">100% transparent</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 fade-in">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4">
+                    Get in <span class="text-blue-400">Touch</span>
+                </h2>
+                <p class="text-xl text-gray-400 max-w-2xl mx-auto">
+                    Have questions about TrueVote? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <!-- Contact Form -->
+                <div class="slide-in-left">
+                    <div class="rounded-2xl p-8 border border-gray-700" style="background-color: var(--bg-secondary);">
+                        <h3 class="text-xl font-bold mb-6" style="color: var(--text-primary);">Send us a Message</h3>
+                        <form>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium mb-2" style="color: var(--text-secondary);">Name</label>
+                                    <input type="text" class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" style="background-color: var(--bg-tertiary); border-color: #374151; color: var(--text-primary);" placeholder="Your full name">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-2" style="color: var(--text-secondary);">Email</label>
+                                    <input type="email" class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" style="background-color: var(--bg-tertiary); border-color: #374151; color: var(--text-primary);" placeholder="your@email.com">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-2" style="color: var(--text-secondary);">Subject</label>
+                                    <input type="text" class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" style="background-color: var(--bg-tertiary); border-color: #374151; color: var(--text-primary);" placeholder="How can we help?">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-2" style="color: var(--text-secondary);">Message</label>
+                                    <textarea rows="4" class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" style="background-color: var(--bg-tertiary); border-color: #374151; color: var(--text-primary);" placeholder="Tell us more..."></textarea>
+                                </div>
+                            </div>
+                            <button type="submit" class="w-full mt-6 btn-primary text-white px-6 py-3 rounded-lg font-semibold focus-ring">
+                                <i class="fas fa-paper-plane mr-2"></i>Send Message
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Contact Info -->
+                <div class="slide-in-right">
+                    <div class="space-y-8">
+                        <div>
+                            <h3 class="text-xl font-bold mb-6" style="color: var(--text-primary);">Contact Information</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-start space-x-4">
+                                    <div class="w-12 h-12 bg-blue-600 bg-opacity-20 rounded-lg flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-envelope text-blue-400"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold" style="color: var(--text-primary);">Email Us</div>
+                                        <div class="text-gray-400">support@truevote.com</div>
+                                        <div class="text-sm text-gray-500">We respond within 24 hours</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-4">
+                                    <div class="w-12 h-12 bg-green-600 bg-opacity-20 rounded-lg flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-phone text-green-400"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold" style="color: var(--text-primary);">Call Us</div>
+                                        <div class="text-gray-400">+1 (555) 123-4567</div>
+                                        <div class="text-sm text-gray-500">Mon-Fri, 9AM-6PM EST</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-start space-x-4">
+                                    <div class="w-12 h-12 bg-purple-600 bg-opacity-20 rounded-lg flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-map-marker-alt text-purple-400"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold" style="color: var(--text-primary);">Visit Us</div>
+                                        <div class="text-gray-400">123 Democracy Street<br>Silicon Valley, CA 94000</div>
+                                        <div class="text-sm text-gray-500">By appointment only</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-6 border border-gray-700">
+                            <h4 class="text-lg font-bold mb-4 text-center" style="color: var(--text-primary);">Follow Us</h4>
+                            <div class="flex justify-center space-x-6">
+                                <a href="#" class="text-gray-400 hover:text-blue-400 transition-colors">
+                                    <i class="fab fa-twitter text-2xl"></i>
+                                </a>
+                                <a href="#" class="text-gray-400 hover:text-blue-400 transition-colors">
+                                    <i class="fab fa-linkedin text-2xl"></i>
+                                </a>
+                                <a href="#" class="text-gray-400 hover:text-blue-400 transition-colors">
+                                    <i class="fab fa-github text-2xl"></i>
+                                </a>
+                                <a href="#" class="text-gray-400 hover:text-blue-400 transition-colors">
+                                    <i class="fab fa-discord text-2xl"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Call to Action -->
     <section class="py-20">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">

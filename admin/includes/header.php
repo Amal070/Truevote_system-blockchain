@@ -183,7 +183,7 @@ header {
     <div class="logo-box"><i class="fas fa-shield-alt"></i></div>
     <div class="header-title">
       <span>TrueVote Admin</span>
-      <span>Candidate Management</span>
+      <!-- <span>Candidate Management</span> -->
     </div>
     <div class="admin-badge"><i class="fas fa-crown"></i>ADMIN</div>
   </div>
