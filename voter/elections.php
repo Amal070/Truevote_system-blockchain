@@ -118,22 +118,25 @@ function getElectionStatus($election, $today) {
     <div class="grid md:grid-cols-2 gap-8">
         <?php foreach ($elections as $election): ?>
             <?php if (getElectionStatus($election, $today) == "registration"): ?>
-                <div class="bg-gray-800 p-6 rounded-xl shadow-lg">
-                    <h3 class="font-bold text-xl mb-1 text-gray-200"><?= htmlspecialchars($election['title']) ?></h3>
-                    <p class="text-sm text-gray-400 mb-2"><?= htmlspecialchars($election['description']) ?></p>
-                    <p class="text-gray-300"><strong>Registration:</strong> <?= $election['registration_start_date'] ?> → <?= $election['registration_end_date'] ?></p>
+                <div class="bg-gray-800 p-6 rounded-xl shadow-lg flex justify-between items-start">
+                    <div>
+                        <h3 class="font-bold text-xl mb-1 text-gray-200"><?= htmlspecialchars($election['title']) ?></h3>
+                        <p class="text-sm text-gray-400 mb-2"><?= htmlspecialchars($election['description']) ?></p>
+                        <p class="text-gray-300"><strong>Registration:</strong> <?= $election['registration_start_date'] ?> → <?= $election['registration_end_date'] ?></p>
 
-                    <?php
-                        $check = $pdo->prepare("SELECT * FROM election_registrations WHERE election_id=? AND voter_id=?");
-                        $check->execute([$election['id'], $user_id]);
-                    ?>
-                    <?php if ($check->rowCount() > 0): ?>
-                        <span class="inline-block mt-4 text-green-500 font-semibold text-sm">✅ Registered</span>
-                    <?php elseif ($today > $election['registration_end_date']): ?>
-                        <span class="inline-block mt-4 text-red-500 font-semibold text-sm">Registration Ended</span>
-                    <?php else: ?>
-                        <button type="button" onclick="openModal(<?= $election['id'] ?>, '<?= addslashes(htmlspecialchars($election['title'])) ?>')" class="mt-4 bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg text-sm font-semibold transition-colors duration-200">Register</button>
-                    <?php endif; ?>
+                        <?php
+                            $check = $pdo->prepare("SELECT * FROM election_registrations WHERE election_id=? AND voter_id=?");
+                            $check->execute([$election['id'], $user_id]);
+                        ?>
+                        <?php if ($check->rowCount() > 0): ?>
+                            <span class="inline-block mt-4 text-green-500 font-semibold text-sm">✅ Registered</span>
+                        <?php elseif ($today > $election['registration_end_date']): ?>
+                            <span class="inline-block mt-4 text-red-500 font-semibold text-sm">Registration Ended</span>
+                        <?php else: ?>
+                            <button type="button" onclick="openModal(<?= $election['id'] ?>, '<?= addslashes(htmlspecialchars($election['title'])) ?>')" class="mt-4 bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg text-sm font-semibold transition-colors duration-200">Register</button>
+                        <?php endif; ?>
+                    </div>
+                    <a href="view_candidates.php?election_id=<?= $election['id'] ?>" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors duration-200">View Candidates</a>
                 </div>
             <?php endif; ?>
         <?php endforeach; ?>

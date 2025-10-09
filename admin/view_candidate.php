@@ -64,6 +64,7 @@ $elections = $electionsStmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php if (!empty($candidates)): ?>
                     <div class="candidates-grid">
                         <?php foreach ($candidates as $c): ?>
+                            <?php if ($c['name'] !== 'None of the above'): ?>
                             <div class="candidate-card">
                                 <?php if($c['photo']): ?>
                                  <img src="../<?= htmlspecialchars($c['photo']) ?>"
@@ -80,6 +81,7 @@ $elections = $electionsStmt->fetchAll(PDO::FETCH_ASSOC);
                                 <!-- View More Button -->
                                 <a href="candidates_more.php?id=<?= $c['id'] ?>" class="view-btn">View More</a>
                             </div>
+                            <?php endif; ?>
                         <?php endforeach; ?>
                     </div>
                 <?php else: ?>

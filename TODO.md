@@ -1,0 +1,4 @@
+- [x] Edit voter/elections.php: Add "View Candidates" button on right side of registration open cards, linked to view_candidates.php?election_id=...
+- [x] Edit voter/view_candidates.php: Add viewport meta tag, modify election fetching to filter by election_id if provided
+- [x] Edit voter/candidates_more.php: Add viewport meta tag, adjust container and image for mobile responsiveness
+- [ ] Test links and responsiveness
